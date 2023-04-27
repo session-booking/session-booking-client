@@ -1,0 +1,77 @@
+.scrollable {
+    overflow-y: scroll;
+    max-height: calc(100vh - 64px);
+}
+
+.calendar-grid {
+    grid-template-columns: 60px repeat(7, 1fr);
+    gap: 8px;
+}
+
+@media screen and (max-width: 768px) {
+    .calendar-grid {
+        grid-template-columns: 60px repeat(3, 1fr);
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+    .calendar-grid {
+        grid-template-columns: 60px repeat(5, 1fr);
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .calendar-grid {
+        grid-template-columns: 60px repeat(7, 1fr);
+    }
+}
+
+/********************************************************************/
+
+.session-management-container {
+    display: flex;
+    width: 300px;
+}
+
+.hamburger-visibility {
+    display: none;
+}
+
+.content-display {
+    margin-top: 30px;
+    margin-left: 20px;
+}
+
+@media (max-width: 767px) {
+    .session-management-container {
+        position: fixed;
+        top: 0;
+        left: -300px;
+        height: 100%;
+        width: 300px;
+        overflow-y: auto;
+        background-color: #f8f9fa;
+        z-index: 15;
+        transform: translateX(0);
+        transition: transform 0.3s ease-in-out;
+        margin-top: 0;
+    }
+
+    .session-management-container.visible {
+        transform: translateX(300px);
+    }
+
+    .hamburger-visibility  {
+        display: block;
+        position: fixed;
+        z-index: 20;
+        top: 0;
+        left: 0;
+    }
+
+    .content-display {
+        margin-top: 60px;
+        margin-left: 40px;
+    }
+
+}

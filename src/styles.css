@@ -1,0 +1,17 @@
+.animated-shadow {
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.animated-shadow:focus {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2), 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.delete-icon {
+    color: #d11a2a;
+    width: 24px;
+    height: 24px;
+}
+
+.delete-icon:hover {
+    color: #ff4b4b;
+}
