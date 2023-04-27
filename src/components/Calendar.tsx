@@ -3,6 +3,7 @@ import {TDay} from "../types/TDay";
 import {TCalendarProps} from "../types/props/TCalendarProps";
 import SessionWindow from "./SessionWindow";
 import {TSession} from "../types/TSession";
+import {format} from "date-fns";
 
 function Calendar({days, sessions, handleDeleteSession}: TCalendarProps) {
     const hours = Array.from({length: 24}, (_, i) => i);
@@ -75,7 +76,7 @@ function Calendar({days, sessions, handleDeleteSession}: TCalendarProps) {
             if (session.date !== null) {
                 const sessionDate = new Date(session.date);
 
-                if (day.date === sessionDate.toLocaleDateString()) {
+                if (day.date === format(sessionDate, 'P')) {
                     const start = convertToMinutes(session.start_time);
                     const end = convertToMinutes(session.end_time);
 

@@ -9,6 +9,8 @@ import CreateSessionButton from "./CreateSessionButton";
 import MonthlyCalendar from "./MonthlyCalendar";
 import Calendar from "./Calendar";
 import Hamburger from "hamburger-react";
+import {eachDayOfInterval, format, startOfWeek} from 'date-fns';
+import {enUS} from 'date-fns/locale';
 
 function CalendarManagement() {
 
@@ -54,15 +56,10 @@ function CalendarManagement() {
     }
 
     function handleSelectedWeek(selectedWeek: Date[]) {
-        const days: TDay[] = [];
-        for (let i = 0; i < 7; i++) {
-            const date = new Date(selectedWeek[i]);
-
-            days.push({
-                name: date.toLocaleDateString("en-US", {weekday: "short"}),
-                date: date.toLocaleDateString()
-            });
-        }
+        const days: TDay[] = selectedWeek.map((date) => ({
+            name: format(date, 'eee', { locale: enUS }),
+            date: format(date, 'P'),
+        }));
 
         setDays(days);
     }
@@ -71,32 +68,15 @@ function CalendarManagement() {
         setSessions([...sessions, newSession]);
     }
 
-    function getStartOfWeek(): Date {
-        const today = new Date();
-        const currentDay = today.getDay();
-        const daysToSubtract = (currentDay === 0) ? 6 : currentDay - 1; // Subtract 6 for Sunday, otherwise subtract currentDay - 1
-
-        const startOfWeek = new Date(today);
-        startOfWeek.setDate(today.getDate() - daysToSubtract);
-
-        return startOfWeek;
-    }
-
     function getDaysOfCurrentWeek(): TDay[] {
-        const startOfWeek = getStartOfWeek();
+        const startOfTheWeek = startOfWeek(new Date(), {weekStartsOn: 1});
+        const endOfTheWeek = new Date(startOfTheWeek);
+        endOfTheWeek.setDate(startOfTheWeek.getDate() + 6);
 
-        const days: TDay[] = [];
-        for (let i = 0; i < 7; i++) {
-            const date = new Date(startOfWeek);
-            date.setDate(startOfWeek.getDate() + i);
-
-            days.push({
-                name: date.toLocaleDateString("en-US", {weekday: "short"}),
-                date: date.toLocaleDateString()
-            });
-        }
-
-        return days;
+        return eachDayOfInterval({start: startOfTheWeek, end: endOfTheWeek}).map((date) => ({
+            name: format(date, 'eee', {locale: enUS}),
+            date: format(date, 'P'),
+        }));
     }
 
     return (
