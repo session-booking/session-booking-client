@@ -26,6 +26,10 @@ function CalendarManagement() {
     // Dialog state
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
+    // Slide event for hiding sidebar
+    const [touchStartX, setTouchStartX] = useState(0);
+    const [touchEndX, setTouchEndX] = useState(0);
+
     const sidebarRef = useRef<HTMLDivElement>(null);
     const hamburgerRef = useRef<HTMLDivElement>(null);
 
@@ -49,7 +53,8 @@ function CalendarManagement() {
         }
 
         document.addEventListener("click", handleClickOutside, true);
-        document.addEventListener("touchmove", handleTouchMove, true);
+        document.addEventListener("touchstart", handleTouchStart, true);
+        document.addEventListener("touchend", handleTouchEnd, true);
 
         fetchSessions().catch((error) => {
             LogApi.logError(error.toString(), null);
@@ -57,7 +62,8 @@ function CalendarManagement() {
 
         return () => {
             document.removeEventListener("click", handleClickOutside, true);
-            document.removeEventListener("touchmove", handleTouchMove, true);
+            document.removeEventListener("touchstart", handleTouchStart, true);
+            document.removeEventListener("touchend", handleTouchEnd, true);
         };
     }, []);
 
@@ -101,8 +107,14 @@ function CalendarManagement() {
         }
     }
 
-    function handleTouchMove(event: TouchEvent) {
-        if (sidebarVisible && event.touches[0].clientX < 200) {
+    function handleTouchStart(event: TouchEvent) {
+        setTouchStartX(event.touches[0].clientX);
+    }
+
+    function handleTouchEnd(event: TouchEvent) {
+        setTouchEndX(event.changedTouches[0].clientX);
+
+        if (sidebarVisible && touchStartX > touchEndX && touchStartX - touchEndX > 50) {
             hideSidebar();
         }
     }
