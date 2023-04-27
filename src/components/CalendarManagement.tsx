@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {TSession} from "../types/TSession";
 import LogApi from "../api/LogApi";
 import SessionApi from "../api/SessionApi";
@@ -26,9 +26,16 @@ function CalendarManagement() {
     // Dialog state
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
+    const sidebarRef = useRef<HTMLDivElement>(null);
+    const hamburgerRef = useRef<HTMLDivElement>(null);
+
     const toggleSidebar = () => {
         setSidebarVisible(!sidebarVisible);
     };
+
+    const hideSidebar = () => {
+        setSidebarVisible(false);
+    }
 
     const toggleDialog = () => {
         setIsDialogOpen(!isDialogOpen);
@@ -41,9 +48,17 @@ function CalendarManagement() {
             setSessions(allSessions);
         }
 
+        document.addEventListener("click", handleClickOutside, true);
+        document.addEventListener("touchmove", handleTouchMove, true);
+
         fetchSessions().catch((error) => {
             LogApi.logError(error.toString(), null);
         });
+
+        return () => {
+            document.removeEventListener("click", handleClickOutside, true);
+            document.removeEventListener("touchmove", handleTouchMove, true);
+        };
     }, []);
 
     function handleDeleteSession(session: TSession | null) {
@@ -57,7 +72,7 @@ function CalendarManagement() {
 
     function handleSelectedWeek(selectedWeek: Date[]) {
         const days: TDay[] = selectedWeek.map((date) => ({
-            name: format(date, 'eee', { locale: enUS }),
+            name: format(date, 'eee', {locale: enUS}),
             date: format(date, 'P'),
         }));
 
@@ -79,20 +94,34 @@ function CalendarManagement() {
         }));
     }
 
+    function handleClickOutside(event: MouseEvent) {
+        if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node) &&
+            hamburgerRef.current && !hamburgerRef.current.contains(event.target as Node)) {
+            hideSidebar();
+        }
+    }
+
+    function handleTouchMove(event: TouchEvent) {
+        if (sidebarVisible && event.touches[0].clientX < 200) {
+            hideSidebar();
+        }
+    }
+
     return (
         <div className="flex">
             <CreateSessionDialog
+                hideSidebar={hideSidebar}
                 isDialogOpen={isDialogOpen}
                 toggleDialog={toggleDialog}
                 handleChange={handleChange}
             />
-            <div className={`session-management-container ${sidebarVisible ? "visible" : ""}`}>
+            <div ref={sidebarRef} className={`sidebar-container ${sidebarVisible ? "visible" : ""}`}>
                 <div className="content-display">
                     <CreateSessionButton handleToggleDialog={toggleDialog}/>
                     <MonthlyCalendar handleSelectedWeek={handleSelectedWeek}/>
                 </div>
             </div>
-            <div className="hamburger-visibility">
+            <div ref={hamburgerRef} className="hamburger-visibility">
                 <Hamburger
                     color={"#000000"}
                     toggled={sidebarVisible}

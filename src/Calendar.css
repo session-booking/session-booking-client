@@ -28,7 +28,7 @@
 
 /********************************************************************/
 
-.session-management-container {
+.sidebar-container {
     display: flex;
     width: 300px;
 }
@@ -43,7 +43,7 @@
 }
 
 @media (max-width: 767px) {
-    .session-management-container {
+    .sidebar-container {
         position: fixed;
         top: 0;
         left: -300px;
@@ -57,7 +57,7 @@
         margin-top: 0;
     }
 
-    .session-management-container.visible {
+    .sidebar-container.visible {
         transform: translateX(300px);
     }
 
@@ -71,7 +71,8 @@
 
     .content-display {
         margin-top: 60px;
-        margin-left: 40px;
+        margin-left: 10px;
+        padding-right: 10px;
     }
 
 }

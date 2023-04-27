@@ -17,34 +17,45 @@ function SessionWindow({session, visible, onClose, clickEvent, handleDeleteSessi
         const clickX = clickEvent.clientX;
         const clickY = clickEvent.clientY;
 
-        if (clickX <= halfWindowWidth && clickY <= halfWindowHeight) {
+        const windowSize = 256; // Width of the shown window
+
+        if (windowWidth <= 768) {
             return {
                 top: clickY + buffer,
-                left: clickX + buffer,
+                left: (windowWidth - windowSize) / 2,
                 right: "auto",
-                bottom: "auto"
-            };
-        } else if (clickX > halfWindowWidth && clickY <= halfWindowHeight) {
-            return {
-                top: clickY + buffer,
-                left: "auto",
-                right: windowWidth - clickX + buffer,
-                bottom: "auto"
-            };
-        } else if (clickX <= halfWindowWidth && clickY > halfWindowHeight) {
-            return {
-                top: "auto",
-                left: clickX + buffer,
-                right: "auto",
-                bottom: windowHeight - clickY + buffer,
+                bottom: "auto",
             };
         } else {
-            return {
-                top: "auto",
-                left: "auto",
-                right: windowWidth - clickX + buffer,
-                bottom: windowHeight - clickY + buffer,
-            };
+            if (clickX <= halfWindowWidth && clickY <= halfWindowHeight) {
+                return {
+                    top: clickY + buffer,
+                    left: clickX + buffer,
+                    right: "auto",
+                    bottom: "auto",
+                };
+            } else if (clickX > halfWindowWidth && clickY <= halfWindowHeight) {
+                return {
+                    top: clickY + buffer,
+                    left: "auto",
+                    right: windowWidth - clickX + buffer,
+                    bottom: "auto",
+                };
+            } else if (clickX <= halfWindowWidth && clickY > halfWindowHeight) {
+                return {
+                    top: "auto",
+                    left: clickX + buffer,
+                    right: "auto",
+                    bottom: windowHeight - clickY + buffer,
+                };
+            } else {
+                return {
+                    top: "auto",
+                    left: "auto",
+                    right: windowWidth - clickX + buffer,
+                    bottom: windowHeight - clickY + buffer,
+                };
+            }
         }
     };
 
@@ -83,7 +94,7 @@ function SessionWindow({session, visible, onClose, clickEvent, handleDeleteSessi
     return (
         <div
             ref={infoWindowRef}
-            className={`fixed w-64 p-4 bg-white rounded-lg shadow-lg ${visible ? "scale-100" : "scale-0"} transition-all duration-300 ease-in-out`}
+            className={`fixed p-4 bg-white rounded-lg shadow-lg ${visible ? "scale-100" : "scale-0"} transition-all duration-300 ease-in-out sm:w-64 sm:text-lg md:w-72 md:text-xl`}
             style={{
                 transformOrigin: "center",
                 zIndex: 10,
@@ -91,13 +102,13 @@ function SessionWindow({session, visible, onClose, clickEvent, handleDeleteSessi
             }}
         >
             <div className="flex justify-between items-start">
-                <h3 className="text-2xl font-normal mb-2">Session Info</h3>
-                <div className="flex">
-                    <button className="focus:outline-none pr-2">
-                        <MdEdit size={24}/>
+                <h3 className="text-xl font-normal mb-2 sm:text-2xl">Session Info</h3>
+                <div className="flex mt-1">
+                    <button className="focus:outline-none pl-2">
+                        <MdEdit className="edit-icon"/>
                     </button>
                     <button className="focus:outline-none" onClick={() => handleDeleteSessionButtonClick(session)}>
-                        <MdDeleteForever color={"#d11a2a"} size={24}/>
+                        <MdDeleteForever className="delete-icon"/>
                     </button>
                 </div>
             </div>
@@ -105,21 +116,22 @@ function SessionWindow({session, visible, onClose, clickEvent, handleDeleteSessi
                 <div>
                     {(session.date !== null) ?
                         <div className="flex">
-                            <p className="text-lg font-normal">Date:&nbsp;</p>
-                            <p className="text-lg font-light">{formatDate(session.date)}</p>
+                            <p className="text-base font-normal sm:text-lg">Date:&nbsp;</p>
+                            <p className="text-base font-light sm:text-lg">{formatDate(session.date)}</p>
                         </div> : null}
                     <div className="flex">
-                        <p className="text-lg font-normal">Time:&nbsp;</p>
-                        <p className="text-lg font-light">{session.start_time} - {session.end_time}</p>
+                        <p className="text-base font-normal sm:text-lg">Time:&nbsp;</p>
+                        <p className="text-base font-light sm:text-lg">{session.start_time} - {session.end_time}</p>
                     </div>
                     <div className="flex">
-                        <p className="text-lg font-normal">Email:&nbsp;</p>
-                        <p className="text-lg font-light">{session.client_email}</p>
+                        <p className="text-base font-normal sm:text-lg">Email:&nbsp;</p>
+                        <p className="text-base font-light sm:text-lg">{session.client_email}</p>
                     </div>
                 </div>
             )}
         </div>
     );
+
 }
 
 export default SessionWindow;

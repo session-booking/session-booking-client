@@ -6,7 +6,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import TimePicker from "./TimePicker";
 
-function CreateSession({handleChange, handleToggleDialog}: TCreateSessionProp) {
+function CreateSession({hideSidebar, handleChange, handleToggleDialog}: TCreateSessionProp) {
     const [session, setSession] = useState<TSession>({
         date: null,
         open: false,
@@ -34,6 +34,7 @@ function CreateSession({handleChange, handleToggleDialog}: TCreateSessionProp) {
             color: "#f59e0b",
         });
         handleToggleDialog();
+        hideSidebar();
     }
 
     function handleDayValueChange(date: Date) {

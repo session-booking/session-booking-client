@@ -1,7 +1,7 @@
 import CreateSession from "./CreateSession";
 import {TCreateSessionDialogProp} from "../types/props/TCreateSessionDialogProp";
 
-function CreateSessionDialog({isDialogOpen, handleChange, toggleDialog}: TCreateSessionDialogProp) {
+function CreateSessionDialog({hideSidebar, isDialogOpen, handleChange, toggleDialog}: TCreateSessionDialogProp) {
     return (
         <div>
             {isDialogOpen && (
@@ -12,6 +12,7 @@ function CreateSessionDialog({isDialogOpen, handleChange, toggleDialog}: TCreate
                     ></div>
                     <div className="relative bg-white p-6 max-w-md mx-auto rounded-xl shadow-md items-center space-x-4">
                         <CreateSession
+                            hideSidebar={hideSidebar}
                             handleChange={handleChange}
                             handleToggleDialog={toggleDialog}
                         />
