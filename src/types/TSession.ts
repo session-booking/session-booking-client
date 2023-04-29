@@ -1,3 +1,4 @@
+// Attribute names need to be the same as the ones defined in server models
 export type TSession = {
     id?: number;
     date: Date | null;

@@ -12,9 +12,7 @@ class SessionApi {
     public async createSession(session: TSession): Promise<TSession> {
         const response = await fetch(`${API_URL}/api/session`, {
             method: "POST",
-            body: JSON.stringify({
-                session
-            }),
+            body: JSON.stringify({session}),
             headers: {
                 "Content-Type": "application/json",
             }
@@ -25,9 +23,7 @@ class SessionApi {
     public async updateSession(session: TSession): Promise<TSession> {
         const response = await fetch(`${API_URL}/api/session`, {
             method: "PUT",
-            body: JSON.stringify({
-                session
-            }),
+            body: JSON.stringify({session}),
             headers: {
                 "Content-Type": "application/json",
             }
