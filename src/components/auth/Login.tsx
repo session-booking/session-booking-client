@@ -101,9 +101,8 @@ function Login() {
                     })
                 );
 
-                setTimeout(() => {
-                    navigate("/");
-                }, 3000);
+                navigate("/");
+
             } else if (response.httpCode === 404 || response.httpCode === 401) {
                 showPopup("Invalid email or password.", false);
                 setIsLoading(false);
@@ -162,6 +161,8 @@ function Login() {
                 } catch (error: any) {
                     LogApi.logError("unexpected error while registering: " + error.toString(), null);
                 }
+            } else {
+                setIsLoading(false);
             }
         }
 
