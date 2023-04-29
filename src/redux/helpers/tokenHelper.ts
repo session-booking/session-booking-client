@@ -1,10 +1,8 @@
-import jwt_decode from 'jwt-decode';
+import UserApi from "../../api/UserApi";
+import {loginUser} from "../state/userSlice";
+import {useDispatch} from "react-redux";
 
-interface JwtPayload {
-    exp: number;
-}
-
-export function isTokenValid(): boolean {
+export async function isTokenValid(dispatch: ReturnType<typeof useDispatch>): Promise<boolean> {
     const token = localStorage.getItem('token');
 
     if (!token) {
@@ -12,15 +10,23 @@ export function isTokenValid(): boolean {
     }
 
     try {
-        const decoded = jwt_decode<JwtPayload>(token);
+        const response = await UserApi.getUser(token);
 
-        if (!decoded || !decoded.exp) {
-            return false;
+        if (response.httpCode === 200 && response.user) {
+            dispatch(
+                loginUser({
+                    id: response.user.id,
+                    username: response.user.username,
+                    email: response.user.email,
+                    phoneNumber: response.user.phone_number,
+                    token: token,
+                })
+            );
+            return true;
         }
-
-        const currentTimeInSeconds = Math.floor(Date.now() / 1000);
-        return decoded.exp > currentTimeInSeconds;
-    } catch (error) {
+    } catch (error: any) {
         return false;
     }
+
+    return false;
 }

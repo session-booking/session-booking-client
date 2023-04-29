@@ -62,6 +62,41 @@ class UserApi {
         };
     }
 
+    public async getUser(token: string): Promise<TResponseData> {
+        const response = await fetch(`${API_URL}/api/user`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": token,
+            }
+        });
+
+        const responseObj = await response.json();
+
+        if (!responseObj.hasOwnProperty("message") || !responseObj.hasOwnProperty("httpCode")) {
+            throw Error("missing message or httpCode attribute");
+        }
+
+        if (response.ok) {
+            if (!responseObj.hasOwnProperty("user")) {
+                throw Error("missing user attribute");
+            }
+
+            const userData = responseObj.user;
+
+            return {
+                message: responseObj.message,
+                httpCode: responseObj.httpCode,
+                user: this.mapUser(userData),
+            }
+        }
+
+        return {
+            message: responseObj.message,
+            httpCode: responseObj.httpCode,
+        };
+    }
+
     private mapUser(object: any): TUser {
         return ({
             id: object.id,
