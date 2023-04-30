@@ -93,14 +93,14 @@ function CalendarManagement() {
     }
 
     function handleSelectedWeek(selectedWeek: Date[]) {
-        const week: TDay[] = selectedWeek.map((date) => ({
+        const updatedWeek: TDay[] = selectedWeek.map((date) => ({
             name: format(date, 'eee', {locale: enUS}),
             displayDate: format(date, 'P'),
             date: date,
         }));
 
-        setSelectedWeek(week);
-        setDisplayedDays(updateDisplayedDays(week));
+        setSelectedWeek(updatedWeek);
+        setDisplayedDays(updateDisplayedDays(updatedWeek));
     }
 
     function handleNavigateDay(left: boolean) {

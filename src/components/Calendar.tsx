@@ -116,7 +116,7 @@ function Calendar({selectedWeek, displayedDays, sessions, handleDeleteSession, h
 
     return (
         <>
-            <div className="w-full mt-5 mr-1">
+            <div className="w-full mt-1 mr-1">
                 <div className="flex">
                     <div className="w-full">
                         <div className="w-full sticky top-0 z-10 bg-white">
