@@ -14,8 +14,11 @@ import {enUS} from 'date-fns/locale';
 
 function CalendarManagement() {
 
-    // Displayed days in a week
-    const [days, setDays] = useState<TDay[]>(getDaysOfCurrentWeek());
+    // Selected week state
+    const [selectedWeek, setSelectedWeek] = useState<TDay[]>(getDaysOfCurrentWeek());
+
+    // Displayed days state
+    const [displayedDays, setDisplayedDays] = useState<TDay[]>(updateDisplayedDays(selectedWeek));
 
     // CalendarManagement state
     const [sessions, setSessions] = useState<TSession[]>([]);
@@ -48,6 +51,11 @@ function CalendarManagement() {
             setSessions(allSessions);
         }
 
+        const handleResize = () => {
+            setDisplayedDays(updateDisplayedDays(selectedWeek));
+        }
+
+        window.addEventListener('resize', handleResize);
         document.addEventListener("click", handleClickOutside, true);
 
         fetchSessions().catch((error) => {
@@ -55,9 +63,25 @@ function CalendarManagement() {
         });
 
         return () => {
+            window.removeEventListener('resize', handleResize);
             document.removeEventListener("click", handleClickOutside, true);
         };
     }, []);
+
+    function updateDisplayedDays(days: TDay[]) {
+        const width = window.innerWidth;
+        const sm = 480;
+        const md = 768;
+        const lg = 1024;
+
+        return (width < sm)
+            ? days.slice(0, 2)
+            : (sm <= width && width < md)
+                ? days.slice(0, 3)
+                : (md <= width && width < lg)
+                    ? days.slice(0, 5)
+                    : days;
+    }
 
     function handleDeleteSession(session: TSession | null) {
         if (session != null) {
@@ -69,12 +93,26 @@ function CalendarManagement() {
     }
 
     function handleSelectedWeek(selectedWeek: Date[]) {
-        const days: TDay[] = selectedWeek.map((date) => ({
+        const week: TDay[] = selectedWeek.map((date) => ({
             name: format(date, 'eee', {locale: enUS}),
-            date: format(date, 'P'),
+            displayDate: format(date, 'P'),
+            date: date,
         }));
 
-        setDays(days);
+        setSelectedWeek(week);
+        setDisplayedDays(updateDisplayedDays(week));
+    }
+
+    function handleNavigateDay(left: boolean) {
+        setDisplayedDays(displayedDays.map((day) => {
+            const updatedDay = new Date(day.date);
+            updatedDay.setDate((left) ? updatedDay.getDate() - 1 : updatedDay.getDate() + 1);
+            return {
+                name: format(updatedDay, 'eee', {locale: enUS}),
+                displayDate: format(updatedDay, 'P'),
+                date: updatedDay,
+            };
+        }));
     }
 
     function handleChange(newSession: TSession) {
@@ -88,7 +126,8 @@ function CalendarManagement() {
 
         return eachDayOfInterval({start: startOfTheWeek, end: endOfTheWeek}).map((date) => ({
             name: format(date, 'eee', {locale: enUS}),
-            date: format(date, 'P'),
+            displayDate: format(date, 'P'),
+            date: date,
         }));
     }
 
@@ -121,9 +160,11 @@ function CalendarManagement() {
                 />
             </div>
             <Calendar
-                days={days}
+                selectedWeek={selectedWeek}
+                displayedDays={displayedDays}
                 sessions={sessions}
                 handleDeleteSession={handleDeleteSession}
+                handleNavigateDay={handleNavigateDay}
             />
         </div>
     );

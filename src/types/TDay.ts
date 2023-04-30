@@ -1,4 +1,5 @@
 export type TDay = {
     name: string;
-    date: string;
+    displayDate: string;
+    date: Date;
 }

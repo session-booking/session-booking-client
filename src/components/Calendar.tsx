@@ -4,8 +4,9 @@ import {TCalendarProps} from "../types/props/TCalendarProps";
 import SessionWindow from "./SessionWindow";
 import {TSession} from "../types/TSession";
 import {format} from "date-fns";
+import {BsChevronCompactLeft, BsChevronCompactRight} from "react-icons/bs";
 
-function Calendar({days, sessions, handleDeleteSession}: TCalendarProps) {
+function Calendar({selectedWeek, displayedDays, sessions, handleDeleteSession, handleNavigateDay}: TCalendarProps) {
     const hours = Array.from({length: 24}, (_, i) => i);
     const quarterHours = Array.from({length: 96}, (_, i) => i);
 
@@ -34,7 +35,7 @@ function Calendar({days, sessions, handleDeleteSession}: TCalendarProps) {
         return () => {
             window.removeEventListener('resize', handleResize);
         };
-    }, [days, sessions]);
+    }, [displayedDays, sessions]);
 
     function handleSessionClick(session: TSession, event: React.MouseEvent<HTMLDivElement>) {
         setClickedSession(session);
@@ -47,7 +48,7 @@ function Calendar({days, sessions, handleDeleteSession}: TCalendarProps) {
         const md = 768;
         const lg = 1024;
 
-        const newDisplay = days.map((_, index) => {
+        const newDisplay = displayedDays.map((_, index) => {
             if (index >= 5 && width < lg) {
                 return 'none';
             } else if (index >= 3 && width < md) {
@@ -76,7 +77,7 @@ function Calendar({days, sessions, handleDeleteSession}: TCalendarProps) {
             if (session.date !== null) {
                 const sessionDate = new Date(session.date);
 
-                if (day.date === format(sessionDate, 'P')) {
+                if (day.displayDate === format(sessionDate, 'P')) {
                     const start = convertToMinutes(session.start_time);
                     const end = convertToMinutes(session.end_time);
 
@@ -104,24 +105,49 @@ function Calendar({days, sessions, handleDeleteSession}: TCalendarProps) {
         });
     }
 
+    function showNavigateLeftButton(date: Date): boolean {
+        return (date.getTime() > selectedWeek[0].date.getTime());
+    }
+
+    function showNavigateRightButton(date: Date): boolean {
+        const arrayLength = selectedWeek.length;
+        return (date.getTime() < selectedWeek[arrayLength - 1].date.getTime());
+    }
+
     return (
         <>
-            <div className="w-full mt-5">
+            <div className="w-full mt-5 mr-1">
                 <div className="flex">
-                    <div className="w-full scrollable">
+                    <div className="w-full">
                         <div className="w-full sticky top-0 z-10 bg-white">
                             <div className="grid calendar-grid">
                                 <div className="col-span-1"></div>
-                                {days.map((day, index) => (
-                                    <div key={String(day.date)} style={{display: display[index]}}>
-                                        <div className="text-sm font-thin ml-0.5">{day.name}.</div>
-                                        <div className="text-3xl font-thin pb-5">{getDateDay(day.date)}</div>
+                                {displayedDays.map((day, index) => (
+                                    <div className="flex justify-between">
+                                        {(index == 0 && showNavigateLeftButton(day.date))
+                                            ? <button
+                                                onClick={() => handleNavigateDay(true)}
+                                                className="hover:bg-gray-200 active:bg-gray-300 rounded transition-colors duration-150 ease-in-out">
+                                                <BsChevronCompactLeft size={22}/> </button>
+                                            : <div className="w-[23px]"></div>}
+
+                                        <div key={String(day.displayDate)} style={{display: display[index]}}>
+                                            <div className="text-sm font-thin ml-0.5">{day.name}.</div>
+                                            <div className="text-3xl font-thin pb-5">{getDateDay(day.displayDate)}</div>
+                                        </div>
+
+                                        {(index == displayedDays.length - 1 && showNavigateRightButton(day.date))
+                                            ? <button
+                                                onClick={() => handleNavigateDay(false)}
+                                                className="hover:bg-gray-200 active:bg-gray-300 rounded transition-colors duration-150 ease-in-out">
+                                                <BsChevronCompactRight size={22}/></button>
+                                            : <div className="w-[23px]"></div>}
                                     </div>
                                 ))}
                             </div>
                         </div>
 
-                        <div className="grid calendar-grid">
+                        <div className="grid calendar-grid scrollable">
                             <div className="col-span-1">
                                 {hours.map((hour) => (
                                     <div key={hour} className="h-16 flex justify-end">
@@ -129,8 +155,8 @@ function Calendar({days, sessions, handleDeleteSession}: TCalendarProps) {
                                     </div>
                                 ))}
                             </div>
-                            {days.map((day, index) => (
-                                <div key={String(day.date)}
+                            {displayedDays.map((day, index) => (
+                                <div key={String(day.displayDate)}
                                      className="col-span-1 mt-3"
                                      style={{display: display[index]}}
                                 >

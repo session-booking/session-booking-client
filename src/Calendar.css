@@ -8,21 +8,21 @@
     gap: 8px;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 480px) {
     .calendar-grid {
-        grid-template-columns: 60px repeat(3, 1fr);
+        grid-template-columns: 35px repeat(2, 1fr);
+    }
+}
+
+@media screen and (min-width: 480px) and (max-width: 768px) {
+    .calendar-grid {
+        grid-template-columns: 35px repeat(3, 1fr);
     }
 }
 
 @media screen and (min-width: 768px) and (max-width: 1024px) {
     .calendar-grid {
-        grid-template-columns: 60px repeat(5, 1fr);
-    }
-}
-
-@media screen and (min-width: 1024px) {
-    .calendar-grid {
-        grid-template-columns: 60px repeat(7, 1fr);
+        grid-template-columns: 35px repeat(5, 1fr);
     }
 }
 
@@ -42,7 +42,7 @@
     margin-left: 20px;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
     .sidebar-container {
         position: fixed;
         top: 0;
@@ -74,5 +74,4 @@
         margin-left: 10px;
         padding-right: 10px;
     }
-
 }
