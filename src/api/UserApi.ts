@@ -102,7 +102,7 @@ class UserApi {
             id: object.id,
             username: object.username,
             email: object.email,
-            phone_number: object.phone_number,
+            phoneNumber: object.phoneNumber,
             password: null,
         });
     }

@@ -15,7 +15,7 @@ function Login() {
         username: "",
         email: "",
         password: "",
-        phone_number: "",
+        phoneNumber: "",
     });
 
     const [validationMessages, setValidationMessages] = useState({
@@ -84,7 +84,7 @@ function Login() {
                 id: null,
                 username: null,
                 email: user.email,
-                phone_number: null,
+                phoneNumber: null,
                 password: hashedPassword,
             });
 
@@ -96,8 +96,7 @@ function Login() {
                         id: response.user.id,
                         username: response.user.username,
                         email: response.user.email,
-                        phoneNumber: response.user.phone_number,
-                        token: response.token,
+                        phoneNumber: response.user.phoneNumber,
                     })
                 );
 
@@ -122,8 +121,8 @@ function Login() {
         if (user.username && user.email && user.password) {
             let formValid = validateUsername(user.username);
 
-            if (user.phone_number && user.phone_number !== "") {
-                formValid = formValid && validatePhoneNumber(user.phone_number);
+            if (user.phoneNumber && user.phoneNumber !== "") {
+                formValid = formValid && validatePhoneNumber(user.phoneNumber);
             }
 
             formValid = formValid && validatePassword(user.password);
@@ -137,7 +136,7 @@ function Login() {
                         username: user.username,
                         email: user.email,
                         password: hashedPassword,
-                        phone_number: user.phone_number,
+                        phoneNumber: user.phoneNumber,
                     });
 
                     if (response.httpCode === undefined || response.httpCode === null) {
@@ -151,7 +150,7 @@ function Login() {
                             username: "",
                             email: "",
                             password: "",
-                            phone_number: "",
+                            phoneNumber: "",
                         });
                     } else if (response.httpCode === 409) {
                         showPopup("Account with this email already exists. Please log in.", false);
@@ -194,7 +193,7 @@ function Login() {
         const value = e.target.value;
         setUser({
             ...user,
-            phone_number: value,
+            phoneNumber: value,
         });
         setValidationMessages({
             ...validationMessages,
@@ -343,7 +342,7 @@ function Login() {
                             </div>
                             <div className="mb-4">
                                 <input
-                                    value={(user.phone_number !== null) ? user.phone_number : ""}
+                                    value={(user.phoneNumber !== null) ? user.phoneNumber : ""}
                                     onChange={handlePhoneNumberValueChange}
                                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700
                                     leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 transition

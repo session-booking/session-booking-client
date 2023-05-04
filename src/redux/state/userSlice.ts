@@ -5,7 +5,6 @@ interface UserState {
     username: string | null;
     email: string | null;
     phoneNumber: string | null;
-    token: string | null;
     isLoggedIn?: boolean;
 }
 
@@ -14,7 +13,6 @@ const initialState: UserState = {
     username: null,
     email: null,
     phoneNumber: null,
-    token: null,
     isLoggedIn: false,
 };
 
@@ -27,7 +25,6 @@ const userSlice = createSlice({
             state.username = action.payload.username;
             state.email = action.payload.email;
             state.phoneNumber = action.payload.phoneNumber;
-            state.token = action.payload.token;
             state.isLoggedIn = true;
         },
         logoutUser: (state) => {
@@ -35,7 +32,6 @@ const userSlice = createSlice({
             state.username = null;
             state.email = null;
             state.phoneNumber = null;
-            state.token = null;
             state.isLoggedIn = false;
         },
     },

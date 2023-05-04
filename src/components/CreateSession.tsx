@@ -10,10 +10,10 @@ function CreateSession({hideSidebar, handleChange, handleToggleDialog}: TCreateS
     const [session, setSession] = useState<TSession>({
         date: null,
         open: false,
-        start_time: "00:00",
-        end_time: "00:00",
-        client_email: "",
-        client_name: "",
+        startTime: "00:00",
+        endTime: "00:00",
+        clientEmail: "",
+        clientName: "",
         color: "#f59e0b",
     });
 
@@ -27,10 +27,10 @@ function CreateSession({hideSidebar, handleChange, handleToggleDialog}: TCreateS
         setSession({
             date: null,
             open: false,
-            start_time: "",
-            end_time: "",
-            client_email: "",
-            client_name: "",
+            startTime: "00:00",
+            endTime: "00:00",
+            clientEmail: "",
+            clientName: "",
             color: "#f59e0b",
         });
         handleToggleDialog();
@@ -47,14 +47,14 @@ function CreateSession({hideSidebar, handleChange, handleToggleDialog}: TCreateS
     function handleStartTimeValueChange(e: React.ChangeEvent<HTMLSelectElement>) {
         setSession({
             ...session,
-            start_time: e.target.value,
+            startTime: e.target.value,
         });
     }
 
     function handleEndTimeValueChange(e: React.ChangeEvent<HTMLSelectElement>) {
         setSession({
             ...session,
-            end_time: e.target.value,
+            endTime: e.target.value,
         });
     }
 
@@ -69,7 +69,7 @@ function CreateSession({hideSidebar, handleChange, handleToggleDialog}: TCreateS
     function handleClientEmailValueChange(e: React.ChangeEvent<HTMLInputElement>) {
         setSession({
             ...session,
-            client_email: e.target.value,
+            clientEmail: e.target.value,
         });
     }
 
@@ -105,7 +105,7 @@ function CreateSession({hideSidebar, handleChange, handleToggleDialog}: TCreateS
                                 <label className="text-black text-base font-light">
                                     Start time
                                     <TimePicker
-                                        value={session.start_time}
+                                        value={session.startTime}
                                         onChange={handleStartTimeValueChange}
                                     />
                                 </label>
@@ -114,7 +114,7 @@ function CreateSession({hideSidebar, handleChange, handleToggleDialog}: TCreateS
                                 <label className="text-black text-base font-light">
                                     End time
                                     <TimePicker
-                                        value={session.end_time}
+                                        value={session.endTime}
                                         onChange={handleEndTimeValueChange}
                                     />
                                 </label>
@@ -148,7 +148,7 @@ function CreateSession({hideSidebar, handleChange, handleToggleDialog}: TCreateS
                             <label className="text-black text-base font-light">
                                 Email
                                 <input
-                                    value={session.client_email}
+                                    value={session.clientEmail}
                                     onChange={handleClientEmailValueChange}
                                     type="email"
                                     className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base 

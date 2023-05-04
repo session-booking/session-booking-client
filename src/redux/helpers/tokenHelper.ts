@@ -18,8 +18,7 @@ export async function isTokenValid(dispatch: ReturnType<typeof useDispatch>): Pr
                     id: response.user.id,
                     username: response.user.username,
                     email: response.user.email,
-                    phoneNumber: response.user.phone_number,
-                    token: token,
+                    phoneNumber: response.user.phoneNumber,
                 })
             );
             return true;

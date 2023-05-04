@@ -121,11 +121,11 @@ function SessionWindow({session, visible, onClose, clickEvent, handleDeleteSessi
                         </div> : null}
                     <div className="flex">
                         <p className="text-base font-normal sm:text-lg">Time:&nbsp;</p>
-                        <p className="text-base font-light sm:text-lg">{session.start_time} - {session.end_time}</p>
+                        <p className="text-base font-light sm:text-lg">{session.startTime} - {session.endTime}</p>
                     </div>
                     <div className="flex">
                         <p className="text-base font-normal sm:text-lg">Email:&nbsp;</p>
-                        <p className="text-base font-light sm:text-lg">{session.client_email}</p>
+                        <p className="text-base font-light sm:text-lg">{session.clientEmail}</p>
                     </div>
                 </div>
             )}

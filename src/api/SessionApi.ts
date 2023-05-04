@@ -5,47 +5,98 @@ import LogApi from "./LogApi";
 class SessionApi {
 
     public async getSessions(): Promise<TSession[]> {
-        const response = await fetch(`${API_URL}/api/sessions`);
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            throw new Error("JWT token not found in local storage");
+        }
+
+        const response = await fetch(`${API_URL}/api/sessions`, {
+            method: "GET",
+            headers: {
+                "Authorization": `${token}`,
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error fetching sessions: ${response.statusText}`);
+        }
+
         return this.mapSessions(await response.json());
     }
 
     public async createSession(session: TSession): Promise<TSession> {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            throw new Error("JWT token not found in local storage");
+        }
+
         const response = await fetch(`${API_URL}/api/session`, {
             method: "POST",
             body: JSON.stringify({session}),
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `${token}`,
             }
         });
+
+        if (!response.ok) {
+            throw new Error(`Error creating session: ${response.statusText}`);
+        }
+
         return this.mapSession(await response.json());
     }
 
     public async updateSession(session: TSession): Promise<TSession> {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            throw new Error("JWT token not found in local storage");
+        }
+
         const response = await fetch(`${API_URL}/api/session`, {
             method: "PUT",
             body: JSON.stringify({session}),
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `${token}`,
             }
         });
+
+        if (!response.ok) {
+            throw new Error(`Error updating session: ${response.statusText}`);
+        }
+
         return this.mapSession(await response.json());
     }
 
     public deleteSession(session: TSession): void {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            LogApi.logError("JWT token not found in local storage", null);
+        }
+
         fetch(`${API_URL}/api/session/${session.id}`, {
             method: "DELETE",
+            headers: {
+                "Authorization": `${token}`,
+            }
         }).then((response) => {
             if (!response.ok) {
-                LogApi.logError("Failed to delete session", session);
+                LogApi.logError(`Error updating session: ${response.statusText}`, session);
             }
         });
     }
 
     private mapSessions(data: []): TSession[] {
         const sessions: TSession[] = [];
+
         data.forEach((object: any) => {
             sessions.push(this.mapSession(object));
         });
+
         return sessions;
     }
 
@@ -54,10 +105,10 @@ class SessionApi {
             id: object.id,
             date: object.date,
             open: object.open,
-            start_time: object.start_time,
-            end_time: object.end_time,
-            client_email: object.client_email,
-            client_name: object.client_name,
+            startTime: object.startTime,
+            endTime: object.endTime,
+            clientEmail: object.clientEmail,
+            clientName: object.clientName,
             color: object.color
         });
     }

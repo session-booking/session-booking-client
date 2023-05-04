@@ -5,10 +5,14 @@ import SessionWindow from "./SessionWindow";
 import {TSession} from "../types/TSession";
 import {format} from "date-fns";
 import {BsChevronCompactLeft, BsChevronCompactRight} from "react-icons/bs";
+import {enUS} from "date-fns/locale";
 
-function Calendar({selectedWeek, displayedDays, sessions, handleDeleteSession, handleNavigateDay}: TCalendarProps) {
+function Calendar({selectedWeek, sessions, handleDeleteSession}: TCalendarProps) {
     const hours = Array.from({length: 24}, (_, i) => i);
     const quarterHours = Array.from({length: 96}, (_, i) => i);
+
+    // Displayed days of the week state
+    const [displayedDays, setDisplayedDays] = useState<TDay[]>([]);
 
     // Calendar state
     const [display, setDisplay] = useState<Array<string>>([]);
@@ -24,9 +28,11 @@ function Calendar({selectedWeek, displayedDays, sessions, handleDeleteSession, h
 
     useEffect(() => {
         updateDisplay();
+        setDisplayedDays(updateDisplayedDays(selectedWeek));
 
         const handleResize = () => {
             updateDisplay();
+            setDisplayedDays(updateDisplayedDays(selectedWeek));
         };
 
         window.addEventListener('resize', handleResize);
@@ -35,7 +41,7 @@ function Calendar({selectedWeek, displayedDays, sessions, handleDeleteSession, h
         return () => {
             window.removeEventListener('resize', handleResize);
         };
-    }, [displayedDays, sessions]);
+    }, [selectedWeek, sessions]);
 
     function handleSessionClick(session: TSession, event: React.MouseEvent<HTMLDivElement>) {
         setClickedSession(session);
@@ -61,6 +67,33 @@ function Calendar({selectedWeek, displayedDays, sessions, handleDeleteSession, h
         setDisplay(newDisplay);
     }
 
+    function updateDisplayedDays(days: TDay[]) {
+        const width = window.innerWidth;
+        const sm = 480;
+        const md = 768;
+        const lg = 1024;
+
+        return (width < sm)
+            ? days.slice(0, 2)
+            : (sm <= width && width < md)
+                ? days.slice(0, 3)
+                : (md <= width && width < lg)
+                    ? days.slice(0, 5)
+                    : days;
+    }
+
+    function handleNavigateDay(left: boolean) {
+        setDisplayedDays(displayedDays.map((day) => {
+            const updatedDay = new Date(day.date);
+            updatedDay.setDate((left) ? updatedDay.getDate() - 1 : updatedDay.getDate() + 1);
+            return {
+                name: format(updatedDay, 'eee', {locale: enUS}),
+                displayDate: format(updatedDay, 'P'),
+                date: updatedDay,
+            };
+        }));
+    }
+
     function getDateDay(date: string) {
         const day = date.split("/")[1];
         return Number(day);
@@ -78,8 +111,8 @@ function Calendar({selectedWeek, displayedDays, sessions, handleDeleteSession, h
                 const sessionDate = new Date(session.date);
 
                 if (day.displayDate === format(sessionDate, 'P')) {
-                    const start = convertToMinutes(session.start_time);
-                    const end = convertToMinutes(session.end_time);
+                    const start = convertToMinutes(session.startTime);
+                    const end = convertToMinutes(session.endTime);
 
                     const top = (start / 15) * 16;
                     const height = ((end - start) / 15) * 16;
@@ -123,25 +156,29 @@ function Calendar({selectedWeek, displayedDays, sessions, handleDeleteSession, h
                             <div className="grid calendar-grid">
                                 <div className="col-span-1"></div>
                                 {displayedDays.map((day, index) => (
-                                    <div className="flex justify-between">
-                                        {(index == 0 && showNavigateLeftButton(day.date))
-                                            ? <button
-                                                onClick={() => handleNavigateDay(true)}
-                                                className="hover:bg-gray-200 active:bg-gray-300 rounded transition-colors duration-150 ease-in-out">
-                                                <BsChevronCompactLeft size={22}/> </button>
-                                            : <div className="w-[23px]"></div>}
+                                    <div className="grid grid-cols-3 items-center">
+                                        <div>
+                                            {(index === 0 && showNavigateLeftButton(day.date))
+                                                ? <button
+                                                    onClick={() => handleNavigateDay(true)}
+                                                    className="hover:bg-gray-200 active:bg-gray-300 rounded transition-colors duration-150 ease-in-out">
+                                                    <BsChevronCompactLeft size={22}/> </button>
+                                                : null}
+                                        </div>
 
-                                        <div key={String(day.displayDate)} style={{display: display[index]}}>
+                                        <div key={String(day.displayDate)} style={{display: display[index]}} className="text-center">
                                             <div className="text-sm font-thin ml-0.5">{day.name}.</div>
                                             <div className="text-3xl font-thin pb-5">{getDateDay(day.displayDate)}</div>
                                         </div>
 
-                                        {(index == displayedDays.length - 1 && showNavigateRightButton(day.date))
-                                            ? <button
-                                                onClick={() => handleNavigateDay(false)}
-                                                className="hover:bg-gray-200 active:bg-gray-300 rounded transition-colors duration-150 ease-in-out">
-                                                <BsChevronCompactRight size={22}/></button>
-                                            : <div className="w-[23px]"></div>}
+                                        <div>
+                                            {(index === displayedDays.length - 1 && showNavigateRightButton(day.date))
+                                                ? <button
+                                                    onClick={() => handleNavigateDay(false)}
+                                                    className="hover:bg-gray-200 active:bg-gray-300 rounded transition-colors duration-150 ease-in-out">
+                                                    <BsChevronCompactRight size={22}/></button>
+                                                : null}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
