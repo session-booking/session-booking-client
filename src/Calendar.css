@@ -1,6 +1,6 @@
 .scrollable {
     overflow-y: scroll;
-    max-height: calc(100vh - 64px);
+    max-height: calc(100vh - 100px);
 }
 
 .calendar-grid {
