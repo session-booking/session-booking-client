@@ -29,11 +29,23 @@
 }
 
 .app-name {
+    font-size: 18px;
     padding-left: 0;
 }
 
-@media screen and (max-width: 1024px) {
+@media (max-width: 405px) {
     .app-name {
-        padding-left: 40px;
+        display: none;
+    }
+
+    .today-button {
+        margin-left: 35px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .app-name {
+        font-size: 16px;
+        padding-left: 35px;
     }
 }
