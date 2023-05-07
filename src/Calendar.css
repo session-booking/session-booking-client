@@ -1,6 +1,6 @@
 .scrollable {
     overflow-y: scroll;
-    max-height: calc(100vh - 100px);
+    max-height: calc(100vh - 150px);
 }
 
 .calendar-grid {
@@ -8,25 +8,49 @@
     gap: 8px;
 }
 
+.nav-button {
+    display: none;
+}
+
 @media screen and (max-width: 480px) {
     .scrollable {
-        max-height: calc(100vh - 180px);
+        max-height: calc(100vh - 250px);
     }
 
     .calendar-grid {
         grid-template-columns: 35px repeat(2, 1fr);
     }
+
+    .nav-button {
+        display: block;
+    }
 }
 
 @media screen and (min-width: 480px) and (max-width: 768px) {
+    .scrollable {
+        max-height: calc(100vh - 200px);
+    }
+
     .calendar-grid {
         grid-template-columns: 35px repeat(3, 1fr);
+    }
+
+    .nav-button {
+        display: block;
     }
 }
 
 @media screen and (min-width: 768px) and (max-width: 1024px) {
+    .scrollable {
+        max-height: calc(100vh - 170px);
+    }
+
     .calendar-grid {
         grid-template-columns: 35px repeat(5, 1fr);
+    }
+
+    .nav-button {
+        display: block;
     }
 }
 

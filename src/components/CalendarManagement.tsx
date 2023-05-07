@@ -11,6 +11,7 @@ import Calendar from "./Calendar";
 import Hamburger from "hamburger-react";
 import {eachDayOfInterval, format, startOfWeek} from 'date-fns';
 import {enUS} from 'date-fns/locale';
+import Header from "./Header";
 
 function CalendarManagement() {
 
@@ -102,32 +103,35 @@ function CalendarManagement() {
     }
 
     return (
-        <div className="flex">
-            <CreateSessionDialog
-                hideSidebar={hideSidebar}
-                isDialogOpen={isDialogOpen}
-                toggleDialog={toggleDialog}
-                handleChange={handleChange}
-            />
-            <div ref={sidebarRef} className={`sidebar-container ${sidebarVisible ? "visible" : ""}`}>
-                <div className="content-display">
-                    <CreateSessionButton handleToggleDialog={toggleDialog}/>
-                    <MonthlyCalendar handleSelectedWeek={handleSelectedWeek}/>
+        <>
+            <Header/>
+            <div className="flex">
+                <CreateSessionDialog
+                    hideSidebar={hideSidebar}
+                    isDialogOpen={isDialogOpen}
+                    toggleDialog={toggleDialog}
+                    handleChange={handleChange}
+                />
+                <div ref={sidebarRef} className={`sidebar-container ${sidebarVisible ? "visible" : ""}`}>
+                    <div className="content-display">
+                        <CreateSessionButton handleToggleDialog={toggleDialog}/>
+                        <MonthlyCalendar handleSelectedWeek={handleSelectedWeek}/>
+                    </div>
                 </div>
-            </div>
-            <div ref={hamburgerRef} className="hamburger-visibility">
-                <Hamburger
-                    color={"#000000"}
-                    toggled={sidebarVisible}
-                    toggle={toggleSidebar}
+                <div ref={hamburgerRef} className="hamburger-visibility">
+                    <Hamburger
+                        color={"#000000"}
+                        toggled={sidebarVisible}
+                        toggle={toggleSidebar}
+                    />
+                </div>
+                <Calendar
+                    selectedWeek={selectedWeek}
+                    sessions={sessions}
+                    handleDeleteSession={handleDeleteSession}
                 />
             </div>
-            <Calendar
-                selectedWeek={selectedWeek}
-                sessions={sessions}
-                handleDeleteSession={handleDeleteSession}
-            />
-        </div>
+        </>
     );
 }
 

@@ -1,0 +1,39 @@
+.header {
+    background-color: #add8e6;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.header-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.header-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    margin-left: 8px;
+}
+
+.header-button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.app-name {
+    padding-left: 0;
+}
+
+@media screen and (max-width: 1024px) {
+    .app-name {
+        padding-left: 40px;
+    }
+}

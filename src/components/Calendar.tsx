@@ -41,7 +41,7 @@ function Calendar({selectedWeek, sessions, handleDeleteSession}: TCalendarProps)
         return () => {
             window.removeEventListener('resize', handleResize);
         };
-    }, [selectedWeek, sessions]);
+    }, [selectedWeek]);
 
     function handleSessionClick(session: TSession, event: React.MouseEvent<HTMLDivElement>) {
         setClickedSession(session);
@@ -138,13 +138,13 @@ function Calendar({selectedWeek, sessions, handleDeleteSession}: TCalendarProps)
         });
     }
 
-    function showNavigateLeftButton(date: Date): boolean {
-        return (date.getTime() > selectedWeek[0].date.getTime());
+    function showNavigateLeftButton(index: number, date: Date): boolean {
+        return (index == 0 && date.getTime() > selectedWeek[0].date.getTime());
     }
 
-    function showNavigateRightButton(date: Date): boolean {
+    function showNavigateRightButton(index: number, date: Date): boolean {
         const arrayLength = selectedWeek.length;
-        return (date.getTime() < selectedWeek[arrayLength - 1].date.getTime());
+        return (index === displayedDays.length - 1 && date.getTime() < selectedWeek[arrayLength - 1].date.getTime());
     }
 
     return (
@@ -158,10 +158,10 @@ function Calendar({selectedWeek, sessions, handleDeleteSession}: TCalendarProps)
                                 {displayedDays.map((day, index) => (
                                     <div className="grid grid-cols-3 items-center">
                                         <div>
-                                            {(index === 0 && showNavigateLeftButton(day.date))
+                                            {(showNavigateLeftButton(index, day.date))
                                                 ? <button
                                                     onClick={() => handleNavigateDay(true)}
-                                                    className="hover:bg-gray-200 active:bg-gray-300 rounded transition-colors duration-150 ease-in-out">
+                                                    className="nav-button hover:bg-gray-200 active:bg-gray-300 rounded transition-colors duration-150 ease-in-out">
                                                     <BsChevronCompactLeft size={22}/> </button>
                                                 : null}
                                         </div>
@@ -171,11 +171,11 @@ function Calendar({selectedWeek, sessions, handleDeleteSession}: TCalendarProps)
                                             <div className="text-3xl font-thin pb-5">{getDateDay(day.displayDate)}</div>
                                         </div>
 
-                                        <div>
-                                            {(index === displayedDays.length - 1 && showNavigateRightButton(day.date))
+                                        <div className="justify-self-end">
+                                            {(showNavigateRightButton(index, day.date))
                                                 ? <button
                                                     onClick={() => handleNavigateDay(false)}
-                                                    className="hover:bg-gray-200 active:bg-gray-300 rounded transition-colors duration-150 ease-in-out">
+                                                    className="nav-button hover:bg-gray-200 active:bg-gray-300 rounded transition-colors duration-150 ease-in-out">
                                                     <BsChevronCompactRight size={22}/></button>
                                                 : null}
                                         </div>
