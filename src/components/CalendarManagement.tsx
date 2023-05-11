@@ -12,6 +12,8 @@ import Hamburger from "hamburger-react";
 import {eachDayOfInterval, format, startOfWeek} from 'date-fns';
 import {enUS} from 'date-fns/locale';
 import Header from "./Header";
+import RightSidebar from "./RightSidebar";
+import {ContentType} from "../enums/ContentType";
 
 function CalendarManagement() {
 
@@ -21,25 +23,48 @@ function CalendarManagement() {
     // CalendarManagement state
     const [sessions, setSessions] = useState<TSession[]>([]);
 
-    // Sidebar state
-    const [sidebarVisible, setSidebarVisible] = useState(false);
+    // Left sidebar state
+    const [leftSidebarVisible, setLeftSidebarVisible] = useState(false);
+
+    // Right sidebar visibility and content state
+    const [rightSidebarVisible, setRightSidebarVisible] = useState(false);
+    const [rightSidebarContent, setRightSidebarContent] = useState<ContentType>(ContentType.NO_CONTENT);
 
     // Dialog state
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
-    const sidebarRef = useRef<HTMLDivElement>(null);
+    // Sidebar refs
+    const leftSidebarRef = useRef<HTMLDivElement>(null);
+    const rightSidebarRef = useRef<HTMLDivElement>(null);
+
+    // Hamburger ref
     const hamburgerRef = useRef<HTMLDivElement>(null);
 
+    // Header button refs
+    const qrButtonRef = useRef<HTMLButtonElement>(null);
+    const notificationButtonRef = useRef<HTMLButtonElement>(null);
+    const settingsButtonRef = useRef<HTMLButtonElement>(null);
+
     const toggleSidebar = () => {
-        setSidebarVisible(!sidebarVisible);
+        setLeftSidebarVisible(!leftSidebarVisible);
     };
 
     const hideSidebar = () => {
-        setSidebarVisible(false);
+        setLeftSidebarVisible(false);
     }
 
     const toggleDialog = () => {
         setIsDialogOpen(!isDialogOpen);
+    };
+
+    const handleHeaderButtonClick = (content: ContentType) => {
+        if (content == rightSidebarContent) {
+            setRightSidebarVisible(false);
+            setRightSidebarContent(ContentType.NO_CONTENT);
+        } else {
+            setRightSidebarVisible(true);
+            setRightSidebarContent(content);
+        }
     };
 
     // Called when the component mounts (side effects code) and before it unmounts (cleanup code)
@@ -49,14 +74,16 @@ function CalendarManagement() {
             setSessions(allSessions);
         }
 
-        document.addEventListener("click", handleClickOutside, true);
+        document.addEventListener("click", handleClickOutsideForLeftSidebar, true);
+        document.addEventListener("click", handleClickOutsideForRightSidebar, true);
 
         fetchSessions().catch((error) => {
             LogApi.logError(error.toString(), null);
         });
 
         return () => {
-            document.removeEventListener("click", handleClickOutside, true);
+            document.removeEventListener("click", handleClickOutsideForLeftSidebar, true);
+            document.removeEventListener("click", handleClickOutsideForRightSidebar, true);
         };
     }, []);
 
@@ -95,16 +122,32 @@ function CalendarManagement() {
         }));
     }
 
-    function handleClickOutside(event: MouseEvent) {
-        if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node) &&
+    function handleClickOutsideForLeftSidebar(event: MouseEvent) {
+        if (leftSidebarRef.current && !leftSidebarRef.current.contains(event.target as Node) &&
             hamburgerRef.current && !hamburgerRef.current.contains(event.target as Node)) {
             hideSidebar();
         }
     }
 
+    function handleClickOutsideForRightSidebar(event: MouseEvent) {
+        if (rightSidebarRef.current && !rightSidebarRef.current.contains(event.target as Node)
+            && qrButtonRef.current && !qrButtonRef.current.contains(event.target as Node)
+            && notificationButtonRef.current && !notificationButtonRef.current.contains(event.target as Node)
+            && settingsButtonRef.current && !settingsButtonRef.current.contains(event.target as Node)) {
+            setRightSidebarVisible(false);
+            setRightSidebarContent(ContentType.NO_CONTENT);
+        }
+    }
+
     return (
         <>
-            <Header/>
+            <Header
+                qrButtonRef={qrButtonRef}
+                notificationButtonRef={notificationButtonRef}
+                settingsButtonRef={settingsButtonRef}
+                rightSidebarContent={rightSidebarContent}
+                onHeaderButtonClick={handleHeaderButtonClick}
+            />
             <div className="flex">
                 <CreateSessionDialog
                     hideSidebar={hideSidebar}
@@ -112,16 +155,20 @@ function CalendarManagement() {
                     toggleDialog={toggleDialog}
                     handleChange={handleChange}
                 />
-                <div ref={sidebarRef} className={`sidebar-container ${sidebarVisible ? "visible" : ""}`}>
+                <div ref={leftSidebarRef} className={`left-sidebar-container ${leftSidebarVisible ? "visible" : ""}`}>
                     <div className="content-display">
                         <CreateSessionButton handleToggleDialog={toggleDialog}/>
                         <MonthlyCalendar handleSelectedWeek={handleSelectedWeek}/>
                     </div>
                 </div>
+                <div ref={rightSidebarRef}
+                     className={`right-sidebar-container ${rightSidebarVisible ? "visible" : ""}`}>
+                    <RightSidebar content={rightSidebarContent}/>
+                </div>
                 <div ref={hamburgerRef} className="hamburger-visibility">
                     <Hamburger
                         color={"#000000"}
-                        toggled={sidebarVisible}
+                        toggled={leftSidebarVisible}
                         toggle={toggleSidebar}
                     />
                 </div>

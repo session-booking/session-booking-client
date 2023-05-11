@@ -109,7 +109,7 @@ function MonthlyCalendar({handleSelectedWeek}: TMonthlyCalendarProps) {
     }
 
     return (
-        <div className="mt-5 bg-white p-4 rounded shadow">
+        <div className="monthly-calendar mt-5 bg-white p-4 rounded shadow">
             <div className="flex justify-between items-center">
                 <p className="text-md font-light pl-2 pb-2">{getMonthName(month)} {year}</p>
                 <div className="flex mb-2">

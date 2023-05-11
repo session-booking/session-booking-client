@@ -77,7 +77,7 @@ function Calendar({selectedWeek, sessions, handleDeleteSession}: TCalendarProps)
             ? days.slice(0, 2)
             : (sm <= width && width < md)
                 ? days.slice(0, 3)
-                : (md <= width && width < lg)
+                : (md <= width && width <= lg)
                     ? days.slice(0, 5)
                     : days;
     }
