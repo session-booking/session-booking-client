@@ -9,6 +9,7 @@ import {enUS} from "date-fns/locale";
 import {TbClockEdit} from "react-icons/tb";
 import Dialog from "./Dialog";
 import SetTimeSlots from "./SetTimeSlots";
+import {TTimeSlot} from "../types/TTimeSlot";
 
 function Calendar({selectedWeek, sessions, timeSlots, handleDeleteSession, handleCreateTimeSlot, handleDeleteTimeSlot}: TCalendarProps) {
     const hours = Array.from({length: 24}, (_, i) => i);
@@ -193,6 +194,19 @@ function Calendar({selectedWeek, sessions, timeSlots, handleDeleteSession, handl
         setSelectedTimeSlotsDay(day);
     }
 
+    function filterTimeSlots(timeSlots: TTimeSlot[], day: TDay | null) {
+        if (day !== null && timeSlots !== null && timeSlots.length > 0) {
+            return timeSlots.filter((timeSlot) => {
+                if (timeSlot.date !== null) {
+                    const timeSlotDate = new Date(timeSlot.date);
+                    return day.displayDate === format(timeSlotDate, 'P');
+                }
+            });
+        } else {
+            return [];
+        }
+    }
+
     return (
         <>
             <div className="w-full mt-5 mr-1">
@@ -304,7 +318,7 @@ function Calendar({selectedWeek, sessions, timeSlots, handleDeleteSession, handl
             >
                 <SetTimeSlots
                     selectedDay={selectedTimeSlotsDay}
-                    timeSlots={timeSlots}
+                    timeSlots={filterTimeSlots(timeSlots, selectedTimeSlotsDay)}
                     handleCreateTimeSlot={handleCreateTimeSlot}
                     handleDeleteTimeSlot={handleDeleteTimeSlot}
                 />
