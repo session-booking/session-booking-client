@@ -1,7 +1,7 @@
 import { TSession } from "../TSession"
 
-export type TCreateSessionProp = {
+export type TCreateSessionProps = {
     hideSidebar: () => void;
-    handleChange: (newSession: TSession) => void;
+    handleCreate: (newSession: TSession) => void;
     handleToggleDialog: () => void;
 }

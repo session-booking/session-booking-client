@@ -1,6 +1,6 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useTokenValidation } from '../hooks/useTokenValidation';
+import {Navigate} from 'react-router-dom';
+import {useTokenValidation} from '../hooks/useTokenValidation';
 import ClipLoader from 'react-spinners/ClipLoader';
 
 interface PublicRouteProps {
@@ -14,18 +14,18 @@ const spinnerStyle = {
     height: '100vh',
 };
 
-const PublicRoute: React.FC<PublicRouteProps> = ({ component: Component }) => {
-    const { isValidToken, loading } = useTokenValidation();
+const PublicRoute: React.FC<PublicRouteProps> = ({component: Component}) => {
+    const {isValidToken, loading} = useTokenValidation();
 
     if (loading) {
         return (
             <div style={spinnerStyle}>
-                <ClipLoader color="#3f51b5" size={50} />
+                <ClipLoader color="#3f51b5" size={50}/>
             </div>
         );
     }
 
-    return !isValidToken ? <Component /> : <Navigate to="/" replace />;
+    return !isValidToken ? <Component/> : <Navigate to="/" replace/>;
 };
 
 export default PublicRoute;

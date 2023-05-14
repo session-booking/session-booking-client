@@ -1,12 +1,11 @@
 import React, {useState} from "react";
-import {TCreateSessionProp} from "../types/props/TCreateSessionProp";
+import {TCreateSessionProps} from "../types/props/TCreateSessionProps";
 import {TSession} from "../types/TSession";
-import SessionApi from "../api/SessionApi";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import TimePicker from "./TimePicker";
 
-function CreateSession({hideSidebar, handleChange, handleToggleDialog}: TCreateSessionProp) {
+function CreateSession({hideSidebar, handleCreate, handleToggleDialog}: TCreateSessionProps) {
     const [session, setSession] = useState<TSession>({
         date: null,
         open: false,
@@ -22,8 +21,8 @@ function CreateSession({hideSidebar, handleChange, handleToggleDialog}: TCreateS
 
         // TODO: Validate session data
 
-        const newSession = await SessionApi.createSession(session);
-        handleChange(newSession);
+        handleCreate(session);
+
         setSession({
             date: null,
             open: false,
@@ -33,6 +32,7 @@ function CreateSession({hideSidebar, handleChange, handleToggleDialog}: TCreateS
             clientName: "",
             color: "#f59e0b",
         });
+
         handleToggleDialog();
         hideSidebar();
     }
@@ -44,17 +44,17 @@ function CreateSession({hideSidebar, handleChange, handleToggleDialog}: TCreateS
         });
     }
 
-    function handleStartTimeValueChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    function handleStartTimeValueChange(time: string) {
         setSession({
             ...session,
-            startTime: e.target.value,
+            startTime: time,
         });
     }
 
-    function handleEndTimeValueChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    function handleEndTimeValueChange(time: string) {
         setSession({
             ...session,
-            endTime: e.target.value,
+            endTime: time,
         });
     }
 
@@ -85,7 +85,7 @@ function CreateSession({hideSidebar, handleChange, handleToggleDialog}: TCreateS
             <div className="max-w-md">
                 <form onSubmit={handleCreateSession}>
                     <div className="grid grid-cols-1 gap-6">
-                        <h2 className="text-2xl font-light">Create a session</h2>
+                        <h2 className="text-2xl font-light">Create a client session</h2>
                         <div className="w-full">
                             <label className="text-black text-base font-light">
                                 Session date

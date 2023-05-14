@@ -4,7 +4,6 @@ import LogApi from "../api/LogApi";
 import SessionApi from "../api/SessionApi";
 import {TDay} from "../types/TDay";
 import "../Calendar.css";
-import CreateSessionDialog from "./CreateSessionDialog";
 import CreateSessionButton from "./CreateSessionButton";
 import MonthlyCalendar from "./MonthlyCalendar";
 import Calendar from "./Calendar";
@@ -14,14 +13,21 @@ import {enUS} from 'date-fns/locale';
 import Header from "./Header";
 import RightSidebar from "./RightSidebar";
 import {ContentType} from "../enums/ContentType";
+import CreateSession from "./CreateSession";
+import Dialog from "./Dialog";
+import {TTimeSlot} from "../types/TTimeSlot";
+import TimeSlotApi from "../api/TimeSlotApi";
 
 function CalendarManagement() {
 
     // Selected week state
     const [selectedWeek, setSelectedWeek] = useState<TDay[]>(getDaysOfCurrentWeek());
 
-    // CalendarManagement state
+    // Weekly sessions state
     const [sessions, setSessions] = useState<TSession[]>([]);
+
+    // Weekly time slots state
+    const [timeSlots, setTimeSlots] = useState<TTimeSlot[]>([]);
 
     // Left sidebar state
     const [leftSidebarVisible, setLeftSidebarVisible] = useState(false);
@@ -31,7 +37,7 @@ function CalendarManagement() {
     const [rightSidebarContent, setRightSidebarContent] = useState<ContentType>(ContentType.NO_CONTENT);
 
     // Dialog state
-    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+    const [isCreateSessionDialogOpen, setIsCreateSessionDialogOpen] = useState<boolean>(false);
 
     // Sidebar refs
     const leftSidebarRef = useRef<HTMLDivElement>(null);
@@ -53,8 +59,8 @@ function CalendarManagement() {
         setLeftSidebarVisible(false);
     }
 
-    const toggleDialog = () => {
-        setIsDialogOpen(!isDialogOpen);
+    const toggleCreateSessionDialog = () => {
+        setIsCreateSessionDialogOpen(!isCreateSessionDialogOpen);
     };
 
     const handleHeaderButtonClick = (content: ContentType) => {
@@ -70,8 +76,13 @@ function CalendarManagement() {
     // Called when the component mounts (side effects code) and before it unmounts (cleanup code)
     useEffect(() => {
         async function fetchSessions() {
-            const allSessions = await SessionApi.getSessions();
+            const allSessions = await SessionApi.getSessions(selectedWeek[0].date, selectedWeek[6].date);
             setSessions(allSessions);
+        }
+
+        async function fetchTimeSlots() {
+            const allTimeSlots = await TimeSlotApi.getTimeSlots(selectedWeek[0].date, selectedWeek[6].date);
+            setTimeSlots(allTimeSlots);
         }
 
         document.addEventListener("click", handleClickOutsideForLeftSidebar, true);
@@ -81,18 +92,49 @@ function CalendarManagement() {
             LogApi.logError(error.toString(), null);
         });
 
+        fetchTimeSlots().catch((error) => {
+            LogApi.logError(error.toString(), null);
+        });
+
         return () => {
             document.removeEventListener("click", handleClickOutsideForLeftSidebar, true);
             document.removeEventListener("click", handleClickOutsideForRightSidebar, true);
         };
-    }, []);
+    }, [selectedWeek]);
+
+    async function handleCreateSession(session: TSession) {
+        try {
+            const newSession = await SessionApi.createSession(session);
+            setSessions([...sessions, newSession]);
+        } catch (error: any) {
+            LogApi.logError(error.toString(), session);
+        }
+    }
 
     function handleDeleteSession(session: TSession | null) {
         if (session != null) {
             SessionApi.deleteSession(session);
             setSessions(sessions.filter((s) => s.id !== session.id));
         } else {
-            LogApi.logWarn("Cannot delete session, because it is null", null);
+            LogApi.logError("Cannot delete session, because it is null", null);
+        }
+    }
+
+    async function handleCreateTimeSlot(timeSlot: TTimeSlot) {
+        try {
+            const newTimeSlot = await TimeSlotApi.createTimeSlot(timeSlot);
+            setTimeSlots([...timeSlots, newTimeSlot]);
+        } catch (error: any) {
+            LogApi.logError(error.toString(), timeSlot);
+        }
+    }
+
+    function handleDeleteTimeSlot(timeSlot: TTimeSlot | null) {
+        if (timeSlot != null) {
+            TimeSlotApi.deleteTimeSlot(timeSlot);
+            setTimeSlots(timeSlots.filter((s) => s.id !== timeSlot.id));
+        } else {
+            LogApi.logError("Cannot delete time slot, because it is null", null);
         }
     }
 
@@ -104,10 +146,6 @@ function CalendarManagement() {
         }));
 
         setSelectedWeek(updatedWeek);
-    }
-
-    function handleChange(newSession: TSession) {
-        setSessions([...sessions, newSession]);
     }
 
     function getDaysOfCurrentWeek(): TDay[] {
@@ -149,15 +187,19 @@ function CalendarManagement() {
                 onHeaderButtonClick={handleHeaderButtonClick}
             />
             <div className="flex">
-                <CreateSessionDialog
-                    hideSidebar={hideSidebar}
-                    isDialogOpen={isDialogOpen}
-                    toggleDialog={toggleDialog}
-                    handleChange={handleChange}
-                />
+                <Dialog
+                    isDialogOpen={isCreateSessionDialogOpen}
+                    toggleDialog={toggleCreateSessionDialog}
+                >
+                    <CreateSession
+                        hideSidebar={hideSidebar}
+                        handleCreate={handleCreateSession}
+                        handleToggleDialog={toggleCreateSessionDialog}
+                    />
+                </Dialog>
                 <div ref={leftSidebarRef} className={`left-sidebar-container ${leftSidebarVisible ? "visible" : ""}`}>
                     <div className="content-display">
-                        <CreateSessionButton handleToggleDialog={toggleDialog}/>
+                        <CreateSessionButton handleToggleDialog={toggleCreateSessionDialog}/>
                         <MonthlyCalendar handleSelectedWeek={handleSelectedWeek}/>
                     </div>
                 </div>
@@ -175,7 +217,10 @@ function CalendarManagement() {
                 <Calendar
                     selectedWeek={selectedWeek}
                     sessions={sessions}
+                    timeSlots={timeSlots}
                     handleDeleteSession={handleDeleteSession}
+                    handleCreateTimeSlot={handleCreateTimeSlot}
+                    handleDeleteTimeSlot={handleDeleteTimeSlot}
                 />
             </div>
         </>

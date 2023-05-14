@@ -40,7 +40,7 @@
     }
 }
 
-@media screen and (min-width: 768px) and (max-width: 1024px) {
+@media screen and (min-width: 768px) and (max-width: 1200px) {
     .scrollable {
         max-height: calc(100vh - 170px);
     }
@@ -90,7 +90,7 @@
     transform: translateX(-300px);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
     .left-sidebar-container {
         position: fixed;
         top: 0;
@@ -126,6 +126,26 @@
 
 /********************************************************************/
 
+.time-slot-dialog {
+    width: 400px;
+}
+
+@media screen and (max-width: 480px) {
+    .time-slot-dialog {
+        width: 200px;
+    }
+}
+
+@media screen and (min-width: 480px) and (max-width: 768px) {
+    .time-slot-dialog {
+        width: 300px;
+    }
+}
+
+/********************************************************************/
+/* Right sidebar animations */
+/********************************************************************/
+
 .fade-enter {
     opacity: 0;
     transform: scale(0.9);
@@ -146,3 +166,26 @@
     transform: scale(0.9);
     transition: opacity 300ms, transform 300ms;
 }
+
+/********************************************************************/
+/* Add and remove time slots animations */
+/********************************************************************/
+
+.item-enter {
+    opacity: 0.01;
+}
+
+.item-enter-active {
+    opacity: 1;
+    transition: opacity 500ms ease-in;
+}
+
+.item-exit {
+    opacity: 1;
+}
+
+.item-exit-active {
+    opacity: 0.01;
+    transition: opacity 200ms ease-in;
+}
+

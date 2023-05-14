@@ -1,7 +1,7 @@
 import {TSession} from "../TSession";
 import React from "react";
 
-export type TSessionWindowProp = {
+export type TSessionWindowProps = {
     session: TSession | null;
     visible: boolean;
     onClose: () => void;

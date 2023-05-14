@@ -110,7 +110,7 @@ function Login() {
                 setIsLoading(false);
             }
         } catch (error: any) {
-            LogApi.logError("unexpected error while logging in: " + error.toString(), null);
+            LogApi.logError("Unexpected error while logging in: " + error.toString(), null);
         }
     }
 
@@ -158,7 +158,7 @@ function Login() {
                         showErrorPopup();
                     }
                 } catch (error: any) {
-                    LogApi.logError("unexpected error while registering: " + error.toString(), null);
+                    LogApi.logError("Unexpected error while registering: " + error.toString(), null);
                 }
             } else {
                 setIsLoading(false);

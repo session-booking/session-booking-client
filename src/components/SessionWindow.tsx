@@ -1,9 +1,9 @@
 import React, {useEffect, useRef} from "react";
-import {TSessionWindowProp} from "../types/props/TSessionWindowProp";
+import {TSessionWindowProps} from "../types/props/TSessionWindowProps";
 import {MdDeleteForever, MdEdit} from "react-icons/md";
 import {TSession} from "../types/TSession";
 
-function SessionWindow({session, visible, onClose, clickEvent, handleDeleteSession}: TSessionWindowProp) {
+function SessionWindow({session, visible, onClose, clickEvent, handleDeleteSession}: TSessionWindowProps) {
     const infoWindowRef = useRef<HTMLDivElement>(null);
 
     const calculateWindowPosition = () => {

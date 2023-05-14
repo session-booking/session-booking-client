@@ -6,8 +6,11 @@ import {TSession} from "../types/TSession";
 import {format} from "date-fns";
 import {BsChevronCompactLeft, BsChevronCompactRight} from "react-icons/bs";
 import {enUS} from "date-fns/locale";
+import {TbClockEdit} from "react-icons/tb";
+import Dialog from "./Dialog";
+import SetTimeSlots from "./SetTimeSlots";
 
-function Calendar({selectedWeek, sessions, handleDeleteSession}: TCalendarProps) {
+function Calendar({selectedWeek, sessions, timeSlots, handleDeleteSession, handleCreateTimeSlot, handleDeleteTimeSlot}: TCalendarProps) {
     const hours = Array.from({length: 24}, (_, i) => i);
     const quarterHours = Array.from({length: 96}, (_, i) => i);
 
@@ -22,8 +25,16 @@ function Calendar({selectedWeek, sessions, handleDeleteSession}: TCalendarProps)
     const [windowVisible, setWindowVisible] = useState<boolean>(false);
     const [clickEvent, setClickEvent] = useState<React.MouseEvent<HTMLDivElement> | null>(null);
 
+    // Available time dialog and props state
+    const [isTimeSlotsDialogOpen, setIsTimeSlotsDialogOpen] = useState<boolean>(false);
+    const [selectedTimeSlotsDay, setSelectedTimeSlotsDay] = useState<TDay | null>(null);
+
     const handleWindowClose = () => {
         setWindowVisible(false);
+    };
+
+    const toggleTimeSlotsDialog = () => {
+        setIsTimeSlotsDialogOpen(!isTimeSlotsDialogOpen);
     };
 
     useEffect(() => {
@@ -52,7 +63,7 @@ function Calendar({selectedWeek, sessions, handleDeleteSession}: TCalendarProps)
     function updateDisplay() {
         const width = window.innerWidth;
         const md = 768;
-        const lg = 1024;
+        const lg = 1200;
 
         const newDisplay = displayedDays.map((_, index) => {
             if (index >= 5 && width < lg) {
@@ -71,7 +82,7 @@ function Calendar({selectedWeek, sessions, handleDeleteSession}: TCalendarProps)
         const width = window.innerWidth;
         const sm = 480;
         const md = 768;
-        const lg = 1024;
+        const lg = 1200;
 
         return (width < sm)
             ? days.slice(0, 2)
@@ -120,7 +131,7 @@ function Calendar({selectedWeek, sessions, handleDeleteSession}: TCalendarProps)
                     return (
                         <div
                             key={`${session.id}`}
-                            className="w-full z-5 rounded cursor-pointer animated-shadow"
+                            className="w-full z-10 rounded cursor-pointer animated-shadow"
                             style={{
                                 position: "absolute",
                                 top: `${top}px`,
@@ -138,6 +149,36 @@ function Calendar({selectedWeek, sessions, handleDeleteSession}: TCalendarProps)
         });
     }
 
+    function renderTimeSlots(day: TDay) {
+        return timeSlots.map((timeSlot) => {
+            if (timeSlot.date !== null) {
+                const timeSlotDate = new Date(timeSlot.date);
+
+                if (day.displayDate === format(timeSlotDate, 'P')) {
+                    const start = convertToMinutes(timeSlot.startTime);
+                    const end = convertToMinutes(timeSlot.endTime);
+
+                    const top = (start / 15) * 16;
+                    const height = ((end - start) / 15) * 16;
+
+                    return (
+                        <div
+                            className="w-full z-5 rounded available-time-div"
+                            style={{
+                                position: "absolute",
+                                top: `${top}px`,
+                                height: `${height}px`,
+                                backgroundColor: "#F3F4F6",
+                                opacity: "0.5",
+                                border: "1px solid black",
+                            }}
+                        ></div>
+                    );
+                }
+            }
+        });
+    }
+
     function showNavigateLeftButton(index: number, date: Date): boolean {
         return (index == 0 && date.getTime() > selectedWeek[0].date.getTime());
     }
@@ -145,6 +186,11 @@ function Calendar({selectedWeek, sessions, handleDeleteSession}: TCalendarProps)
     function showNavigateRightButton(index: number, date: Date): boolean {
         const arrayLength = selectedWeek.length;
         return (index === displayedDays.length - 1 && date.getTime() < selectedWeek[arrayLength - 1].date.getTime());
+    }
+
+    function handleTimeSlotsButtonClick(day: TDay) {
+        toggleTimeSlotsDialog();
+        setSelectedTimeSlotsDay(day);
     }
 
     return (
@@ -162,13 +208,22 @@ function Calendar({selectedWeek, sessions, handleDeleteSession}: TCalendarProps)
                                                 ? <button
                                                     onClick={() => handleNavigateDay(true)}
                                                     className="nav-button hover:bg-gray-200 active:bg-gray-300 rounded transition-colors duration-150 ease-in-out">
-                                                    <BsChevronCompactLeft size={22}/> </button>
+                                                    <BsChevronCompactLeft size={22}/></button>
                                                 : null}
                                         </div>
 
-                                        <div key={String(day.displayDate)} style={{display: display[index]}} className="text-center">
-                                            <div className="text-sm font-thin ml-0.5">{day.name}.</div>
-                                            <div className="text-3xl font-thin pb-5">{getDateDay(day.displayDate)}</div>
+                                        <div key={String(day.displayDate)} style={{display: display[index]}}
+                                             className="flex flex-col">
+                                            <div className="text-center">
+                                                <div className="text-sm font-thin ml-0.5">{day.name}.</div>
+                                                <div className="text-3xl font-thin pb-1">{getDateDay(day.displayDate)}</div>
+                                                <button
+                                                    onClick={() => handleTimeSlotsButtonClick(day)}
+                                                    className="text-blue-500 rounded-full p-1 hover:bg-blue-100 ml-0.5
+                                                        transition duration-300 w-fit">
+                                                    <p><TbClockEdit size={22}/></p>
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <div className="justify-self-end">
@@ -227,6 +282,7 @@ function Calendar({selectedWeek, sessions, handleDeleteSession}: TCalendarProps)
                                             );
                                         })}
 
+                                        {renderTimeSlots(day)}
                                         {renderSessions(day)}
                                     </div>
                                 </div>
@@ -242,6 +298,17 @@ function Calendar({selectedWeek, sessions, handleDeleteSession}: TCalendarProps)
                 clickEvent={clickEvent}
                 handleDeleteSession={handleDeleteSession}
             />
+            <Dialog
+                isDialogOpen={isTimeSlotsDialogOpen}
+                toggleDialog={toggleTimeSlotsDialog}
+            >
+                <SetTimeSlots
+                    selectedDay={selectedTimeSlotsDay}
+                    timeSlots={timeSlots}
+                    handleCreateTimeSlot={handleCreateTimeSlot}
+                    handleDeleteTimeSlot={handleDeleteTimeSlot}
+                />
+            </Dialog>
         </>
     );
 }

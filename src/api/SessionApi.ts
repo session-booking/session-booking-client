@@ -1,17 +1,21 @@
-import { API_URL } from "./config";
-import { TSession } from "../types/TSession";
+import {API_URL} from "./config";
+import {TSession} from "../types/TSession";
 import LogApi from "./LogApi";
+import {format} from "date-fns";
 
 class SessionApi {
 
-    public async getSessions(): Promise<TSession[]> {
+    public async getSessions(fromDate: Date, toDate: Date): Promise<TSession[]> {
         const token = localStorage.getItem("token");
 
         if (!token) {
             throw new Error("JWT token not found in local storage");
         }
 
-        const response = await fetch(`${API_URL}/api/sessions`, {
+        const fromDateString = format(fromDate, 'yyyy-MM-dd');
+        const toDateString = format(toDate, 'yyyy-MM-dd');
+
+        const response = await fetch(`${API_URL}/api/sessions?from=${fromDateString}&to=${toDateString}`, {
             method: "GET",
             headers: {
                 "Authorization": `${token}`,
@@ -87,6 +91,8 @@ class SessionApi {
             if (!response.ok) {
                 LogApi.logError(`Error updating session: ${response.statusText}`, session);
             }
+        }).catch((error) => {
+            LogApi.logError(error, session);
         });
     }
 
