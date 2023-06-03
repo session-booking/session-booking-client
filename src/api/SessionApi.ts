@@ -1,4 +1,4 @@
-import {API_URL} from "./config";
+import {API_URL} from "./config/config";
 import {TSession} from "../types/TSession";
 import LogApi from "./LogApi";
 import {format} from "date-fns";
@@ -89,10 +89,10 @@ class SessionApi {
             }
         }).then((response) => {
             if (!response.ok) {
-                LogApi.logError(`Error updating session: ${response.statusText}`, session);
+                LogApi.logError(`Error updating session: ${response.statusText}`, {data: session});
             }
         }).catch((error) => {
-            LogApi.logError(error, session);
+            LogApi.logError(error, {data: session});
         });
     }
 

@@ -158,14 +158,12 @@ function CreateSession({hideSidebar, handleCreate, handleToggleDialog}: TCreateS
                                 />
                             </label>
                         </div>
-                        <div>
-                            <button
-                                className="rounded-md bg-blue-500 hover:bg-blue-600 py-3 px-8 text-center
-                                        text-base font-normal text-white outline-none"
-                            >
-                                Submit
-                            </button>
-                        </div>
+                        <button
+                            className="rounded-md bg-blue-500 hover:bg-blue-600 py-3 px-8 text-center
+                                        text-base font-normal text-white outline-none w-full"
+                        >
+                            Submit
+                        </button>
                     </div>
                 </form>
             </div>

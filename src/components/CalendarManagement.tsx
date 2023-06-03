@@ -17,6 +17,12 @@ import CreateSession from "./CreateSession";
 import Dialog from "./Dialog";
 import {TTimeSlot} from "../types/TTimeSlot";
 import TimeSlotApi from "../api/TimeSlotApi";
+import AddServiceButton from "./AddServiceButton";
+import AddService from "./AddService";
+import ServiceApi from "../api/ServiceApi";
+import {TService} from "../types/TService";
+import {useSelector} from "react-redux";
+import {RootState} from "../redux/state/store";
 
 function CalendarManagement() {
 
@@ -29,6 +35,9 @@ function CalendarManagement() {
     // Weekly time slots state
     const [timeSlots, setTimeSlots] = useState<TTimeSlot[]>([]);
 
+    // Services state
+    const [services, setServices] = useState<TService[]>([]);
+
     // Left sidebar state
     const [leftSidebarVisible, setLeftSidebarVisible] = useState(false);
 
@@ -36,8 +45,11 @@ function CalendarManagement() {
     const [rightSidebarVisible, setRightSidebarVisible] = useState(false);
     const [rightSidebarContent, setRightSidebarContent] = useState<ContentType>(ContentType.NO_CONTENT);
 
-    // Dialog state
+    // Create session dialog state
     const [isCreateSessionDialogOpen, setIsCreateSessionDialogOpen] = useState<boolean>(false);
+
+    // Add service dialog state
+    const [isAddServiceDialogOpen, setIsAddServiceDialogOpen] = useState<boolean>(false);
 
     // Sidebar refs
     const leftSidebarRef = useRef<HTMLDivElement>(null);
@@ -51,6 +63,8 @@ function CalendarManagement() {
     const notificationButtonRef = useRef<HTMLButtonElement>(null);
     const settingsButtonRef = useRef<HTMLButtonElement>(null);
 
+    const userId = useSelector((state: RootState) => state.user.id);
+
     const toggleSidebar = () => {
         setLeftSidebarVisible(!leftSidebarVisible);
     };
@@ -62,6 +76,10 @@ function CalendarManagement() {
     const toggleCreateSessionDialog = () => {
         setIsCreateSessionDialogOpen(!isCreateSessionDialogOpen);
     };
+
+    const toggleAddServiceDialog = () => {
+        setIsAddServiceDialogOpen(!isAddServiceDialogOpen);
+    }
 
     const handleHeaderButtonClick = (content: ContentType) => {
         if (content == rightSidebarContent) {
@@ -85,6 +103,11 @@ function CalendarManagement() {
             setTimeSlots(allTimeSlots);
         }
 
+        async function fetchServices() {
+            const allServices = await ServiceApi.getServices(userId);
+            setServices(allServices);
+        }
+
         document.addEventListener("click", handleClickOutsideForLeftSidebar, true);
         document.addEventListener("click", handleClickOutsideForRightSidebar, true);
 
@@ -93,6 +116,10 @@ function CalendarManagement() {
         });
 
         fetchTimeSlots().catch((error) => {
+            LogApi.logError(error.toString(), null);
+        });
+
+        fetchServices().catch((error) => {
             LogApi.logError(error.toString(), null);
         });
 
@@ -107,7 +134,7 @@ function CalendarManagement() {
             const newSession = await SessionApi.createSession(session);
             setSessions([...sessions, newSession]);
         } catch (error: any) {
-            LogApi.logError(error.toString(), session);
+            LogApi.logError(error.toString(), {data: session});
         }
     }
 
@@ -125,7 +152,7 @@ function CalendarManagement() {
             const newTimeSlot = await TimeSlotApi.createTimeSlot(timeSlot);
             setTimeSlots([...timeSlots, newTimeSlot]);
         } catch (error: any) {
-            LogApi.logError(error.toString(), timeSlot);
+            LogApi.logError(error.toString(), {data: timeSlot});
         }
     }
 
@@ -135,6 +162,25 @@ function CalendarManagement() {
             setTimeSlots(timeSlots.filter((s) => s.id !== timeSlot.id));
         } else {
             LogApi.logError("Cannot delete time slot, because it is null", null);
+        }
+    }
+
+    async function handleCreateService(service: TService) {
+        service.length = service.length * 15;
+        try {
+            const newService = await ServiceApi.createService(service);
+            setServices([...services, newService]);
+        } catch (error: any) {
+            LogApi.logError(error.toString(), {data: service});
+        }
+    }
+
+    function handleDeleteService(service: TService | null) {
+        if (service != null) {
+            ServiceApi.deleteService(service);
+            setServices(services.filter((s) => s.id !== service.id));
+        } else {
+            LogApi.logError("Cannot delete service, because it is null", null);
         }
     }
 
@@ -197,10 +243,21 @@ function CalendarManagement() {
                         handleToggleDialog={toggleCreateSessionDialog}
                     />
                 </Dialog>
+                <Dialog
+                    isDialogOpen={isAddServiceDialogOpen}
+                    toggleDialog={toggleAddServiceDialog}
+                >
+                    <AddService
+                        services={services}
+                        handleAddService={handleCreateService}
+                        handleDeleteService={handleDeleteService}
+                    />
+                </Dialog>
                 <div ref={leftSidebarRef} className={`left-sidebar-container ${leftSidebarVisible ? "visible" : ""}`}>
                     <div className="content-display">
                         <CreateSessionButton handleToggleDialog={toggleCreateSessionDialog}/>
                         <MonthlyCalendar handleSelectedWeek={handleSelectedWeek}/>
+                        <AddServiceButton handleToggleDialog={toggleAddServiceDialog}/>
                     </div>
                 </div>
                 <div ref={rightSidebarRef}

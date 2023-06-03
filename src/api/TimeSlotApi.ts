@@ -1,5 +1,5 @@
 import {TTimeSlot} from "../types/TTimeSlot";
-import {API_URL} from "./config";
+import {API_URL} from "./config/config";
 import LogApi from "./LogApi";
 
 class TimeSlotApi {
@@ -68,7 +68,7 @@ class TimeSlotApi {
                 throw new Error(`Error deleting time slot: ${response.statusText}`);
             }
         }).catch((error) => {
-            LogApi.logError(error, timeSlot);
+            LogApi.logError(error, {data: timeSlot});
         });
     }
 

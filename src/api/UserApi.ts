@@ -1,5 +1,5 @@
 import {TUser} from "../types/TUser";
-import {API_URL} from "./config";
+import {API_URL} from "./config/config";
 import {TResponseData} from "../types/TResponseData";
 
 class UserApi {

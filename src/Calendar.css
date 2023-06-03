@@ -55,6 +55,8 @@
 }
 
 /********************************************************************/
+/* Left and right sidebar styles */
+/********************************************************************/
 
 .left-sidebar-container {
     display: flex;
@@ -68,6 +70,8 @@
 .content-display {
     margin-top: 30px;
     margin-left: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 .right-sidebar-container {
@@ -187,5 +191,58 @@
 .item-exit-active {
     opacity: 0.01;
     transition: opacity 200ms ease-in;
+}
+
+/********************************************************************/
+/* Slider */
+/********************************************************************/
+
+.slider-container {
+    position: relative;
+    width: 100%;
+}
+
+.slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 10px;
+    background: #d3d3d3;
+    outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: none;
+}
+
+.slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: none;
+}
+
+.slider-value {
+    position: absolute;
+    bottom: 100%;
+    background: white;
+    color: black;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.slider-value.visible {
+    opacity: 1;
 }
 

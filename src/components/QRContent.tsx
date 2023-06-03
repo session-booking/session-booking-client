@@ -38,10 +38,9 @@ function QRContent() {
       color: black;
       border-radius: 5px;
       cursor: pointer;
-      transition: transform 0.1s ease-in-out, background-color 0.2s ease-in-out;
+      transition: background-color 0.2s ease-in-out;
 
       &:hover {
-        transform: scale(1.1);
         background: #e1e1e1;
       }
 

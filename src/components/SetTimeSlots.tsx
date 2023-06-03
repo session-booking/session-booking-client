@@ -72,7 +72,7 @@ function SetTimeSlots({selectedDay, timeSlots, handleCreateTimeSlot, handleDelet
     }
 
     return (
-        <div className="p-4 max-w-xl items-center">
+        <div className="p-4 items-center">
             <div className="max-w-xl">
                 <div className="time-slot-dialog flex flex-col justify-center">
                     <h3 className="text-md font-thin">{formatDayName(selectedDay?.name)}{formatDate(selectedDay?.date)}</h3>
