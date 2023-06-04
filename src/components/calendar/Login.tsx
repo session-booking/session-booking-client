@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
 import {FiEye, FiEyeOff} from 'react-icons/fi';
-import {TUser} from "../types/TUser";
-import UserApi from "../api/UserApi";
-import LogApi from "../api/LogApi";
-import "../Login.css";
+import {TUser} from "../../types/TUser";
+import UserApi from "../../api/UserApi";
+import LogApi from "../../api/LogApi";
+import "../../Login.css";
 import {useDispatch} from "react-redux";
-import {loginUser} from "../redux/state/userSlice";
+import {loginUser} from "../../redux/state/userSlice";
 import {useNavigate} from 'react-router-dom';
 import {ClipLoader} from 'react-spinners';
 

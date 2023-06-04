@@ -66,7 +66,6 @@ class UserApi {
         const response = await fetch(`${API_URL}/api/user`, {
             method: "GET",
             headers: {
-                "Content-Type": "application/json",
                 "Authorization": token,
             }
         });
@@ -95,6 +94,20 @@ class UserApi {
             message: responseObj.message,
             httpCode: responseObj.httpCode,
         };
+    }
+
+    public async checkUser(id: string): Promise<boolean> {
+        const response = await fetch(`${API_URL}/api/user/${id}`, {
+            method: "GET",
+        });
+
+        const responseObj = await response.json();
+
+        if (!responseObj.hasOwnProperty("message") || !responseObj.hasOwnProperty("httpCode")) {
+            throw Error("missing message or httpCode attribute");
+        }
+
+        return response.ok;
     }
 
     private mapUser(object: any): TUser {

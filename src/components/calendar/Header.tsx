@@ -1,8 +1,8 @@
-import "../Header.css";
+import "../../Header.css";
 import {IoNotificationsOutline, IoSettingsOutline} from "react-icons/io5";
 import {AiOutlineQrcode} from "react-icons/ai";
-import {THeaderProps} from "../types/props/THeaderProps";
-import {ContentType} from "../enums/ContentType";
+import {THeaderProps} from "../../types/props/THeaderProps";
+import {ContentType} from "../../enums/ContentType";
 
 function Header({qrButtonRef, notificationButtonRef, settingsButtonRef, rightSidebarContent, onHeaderButtonClick}: THeaderProps) {
     return (

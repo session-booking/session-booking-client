@@ -3,13 +3,14 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import "./styles.css";
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
-import CalendarManagement from "./components/CalendarManagement";
-import Login from "./components/Login";
+import CalendarManagement from "./components/calendar/CalendarManagement";
+import Login from "./components/calendar/Login";
 import {Provider} from "react-redux";
 import store from "./redux/state/store";
 import ProtectedRoute from "./redux/ProtectedRoute";
 import PublicRoute from "./redux/PublicRoute";
-import SessionBooking from "./components/SessionBooking";
+import SessionBooking from "./components/booking/SessionBooking";
+import BookingRoute from "./redux/BookingRoute";
 
 const router = createBrowserRouter([
     {
@@ -22,7 +23,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/book/:id",
-        element: <SessionBooking/>,
+        element: <BookingRoute component={SessionBooking}/>,
     }
 ]);
 

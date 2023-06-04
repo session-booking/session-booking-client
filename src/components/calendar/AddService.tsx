@@ -1,8 +1,8 @@
 import React, {useState} from "react";
 import Slider from "./Slider";
 import {TransitionGroup, CSSTransition} from "react-transition-group";
-import {TAddServiceProps} from "../types/props/TAddServiceProps";
-import {TService} from "../types/TService";
+import {TAddServiceProps} from "../../types/props/TAddServiceProps";
+import {TService} from "../../types/TService";
 import {AiOutlineMinusCircle} from "react-icons/ai";
 import {BsDot, FaRegClock} from "react-icons/all";
 
@@ -79,11 +79,11 @@ function AddService({services, handleAddService, handleDeleteService}: TAddServi
                             <CSSTransition key={index} timeout={300} classNames="item">
                                 <div className="flex flex-row justify-between items-center mt-2 bg-white rounded-lg shadow-md p-3">
                                     <div className="flex w-full items-center">
-                                        <span className="font-normal text-xl truncate w-1/2">{service.name}</span>
+                                        <span className="font-normal text-lg truncate w-1/2">{service.name}</span>
                                         <BsDot size={24} />
                                         <div className="flex items-center w-1/2 justify-center">
-                                            <FaRegClock size={20} className="mr-2" />
-                                            <span className="font-light text-lg">{service.length} mins</span>
+                                            <FaRegClock size={18} className="mr-2"/>
+                                            <span className="font-light text-md">{service.length} min</span>
                                         </div>
                                         <button
                                             onClick={() => handleRemoveService(service)}

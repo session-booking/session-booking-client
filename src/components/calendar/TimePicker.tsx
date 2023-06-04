@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react';
-import {TTimePickerProps} from '../types/props/TTimePickerProps';
+import {TTimePickerProps} from '../../types/props/TTimePickerProps';
 
 function TimePicker({value, onChange}: TTimePickerProps) {
     const quarterHours = Array.from({length: 96}, (_, i) => i * 15);

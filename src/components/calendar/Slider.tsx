@@ -1,5 +1,5 @@
 import React, {useState, useEffect, ChangeEvent, useRef} from 'react';
-import {TSliderProps} from "../types/props/TSliderProps";
+import {TSliderProps} from "../../types/props/TSliderProps";
 
 function Slider({value, onChange}: TSliderProps) {
     const [displayValue, setDisplayValue] = useState<number>(value);

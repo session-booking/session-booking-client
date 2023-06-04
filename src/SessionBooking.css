@@ -1,0 +1,8 @@
+.service-card {
+    transition: all 0.1s ease-in-out;
+}
+
+.service-card:active {
+    transform: scale(1.1);
+    background-color: #DAE0E7;
+}

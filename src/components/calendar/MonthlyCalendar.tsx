@@ -1,6 +1,6 @@
 import {useState} from "react";
 import {FiChevronLeft, FiChevronRight} from "react-icons/fi";
-import {TMonthlyCalendarProps} from "../types/props/TMonthlyCalendarProps";
+import {TMonthlyCalendarProps} from "../../types/props/TMonthlyCalendarProps";
 
 function MonthlyCalendar({handleSelectedWeek}: TMonthlyCalendarProps) {
 

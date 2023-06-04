@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import {isTokenValid} from "../redux/helpers/tokenHelper";
+import {useState, useEffect} from 'react';
+import {useDispatch} from 'react-redux';
+import {RouteHelper} from "../helpers/RouteHelper";
 
 export const useTokenValidation = () => {
     const [isValidToken, setIsValidToken] = useState(false);
@@ -9,12 +9,12 @@ export const useTokenValidation = () => {
 
     useEffect(() => {
         const checkToken = async () => {
-            const valid = await isTokenValid(dispatch);
+            const valid = await RouteHelper.isTokenValid(dispatch);
             setIsValidToken(valid);
             setLoading(false);
         };
         checkToken();
     }, [dispatch]);
 
-    return { isValidToken, loading };
+    return {isValidToken, loading};
 };

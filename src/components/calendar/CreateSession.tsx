@@ -1,6 +1,6 @@
 import React, {useState} from "react";
-import {TCreateSessionProps} from "../types/props/TCreateSessionProps";
-import {TSession} from "../types/TSession";
+import {TCreateSessionProps} from "../../types/props/TCreateSessionProps";
+import {TSession} from "../../types/TSession";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import TimePicker from "./TimePicker";

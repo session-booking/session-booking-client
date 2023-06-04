@@ -1,13 +1,15 @@
 import React, {useState} from 'react';
 import {TransitionGroup, CSSTransition} from 'react-transition-group';
-import {TSetTimeSlotsProps} from "../types/props/TSetTimeSlotsProps";
+import {TSetTimeSlotsProps} from "../../types/props/TSetTimeSlotsProps";
 import TimePicker from "./TimePicker";
 import {AiOutlineMinusCircle} from 'react-icons/ai';
-import {TTimeSlot} from "../types/TTimeSlot";
+import {TTimeSlot} from "../../types/TTimeSlot";
 
 function SetTimeSlots({selectedDay, timeSlots, handleCreateTimeSlot, handleDeleteTimeSlot}: TSetTimeSlotsProps) {
     const [timeSlot, setTimeSlot] = useState<TTimeSlot>({
-        date: (selectedDay?.date != undefined) ? selectedDay?.date : null,
+        date: (selectedDay?.date != undefined)
+            ? new Date(Date.UTC(selectedDay?.date.getFullYear(), selectedDay?.date.getMonth(), selectedDay?.date.getDate()))
+            : null,
         startTime: "00:00",
         endTime: "00:00",
     });

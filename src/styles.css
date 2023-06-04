@@ -19,6 +19,13 @@ body {
     font-size: 24px;
 }
 
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
 @media only screen and (max-width: 768px) {
     .edit-icon {
         font-size: 20px;

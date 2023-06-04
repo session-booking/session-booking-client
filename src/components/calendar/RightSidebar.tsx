@@ -1,6 +1,6 @@
 import {CSSTransition, SwitchTransition} from 'react-transition-group';
-import {ContentType} from "../enums/ContentType";
-import {TRightSidebarProps} from "../types/props/TRightSidebarProps";
+import {ContentType} from "../../enums/ContentType";
+import {TRightSidebarProps} from "../../types/props/TRightSidebarProps";
 import QRContent from "./QRContent";
 import NotificationContent from "./NotificationContent";
 import SettingsContent from "./SettingsContent";

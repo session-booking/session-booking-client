@@ -1,15 +1,15 @@
 import React, {useEffect, useState} from "react";
-import {TDay} from "../types/TDay";
-import {TCalendarProps} from "../types/props/TCalendarProps";
+import {TDay} from "../../types/TDay";
+import {TCalendarProps} from "../../types/props/TCalendarProps";
 import SessionWindow from "./SessionWindow";
-import {TSession} from "../types/TSession";
+import {TSession} from "../../types/TSession";
 import {format} from "date-fns";
 import {BsChevronCompactLeft, BsChevronCompactRight} from "react-icons/bs";
 import {enUS} from "date-fns/locale";
 import {TbClockEdit} from "react-icons/tb";
 import Dialog from "./Dialog";
 import SetTimeSlots from "./SetTimeSlots";
-import {TTimeSlot} from "../types/TTimeSlot";
+import {TTimeSlot} from "../../types/TTimeSlot";
 
 function Calendar({selectedWeek, sessions, timeSlots, handleDeleteSession, handleCreateTimeSlot, handleDeleteTimeSlot}: TCalendarProps) {
     const hours = Array.from({length: 24}, (_, i) => i);
@@ -118,7 +118,6 @@ function Calendar({selectedWeek, sessions, timeSlots, handleDeleteSession, handl
 
     function renderSessions(day: TDay) {
         return sessions.map((session) => {
-
             if (session.date !== null) {
                 const sessionDate = new Date(session.date);
 

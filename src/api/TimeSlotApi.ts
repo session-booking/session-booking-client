@@ -1,24 +1,20 @@
 import {TTimeSlot} from "../types/TTimeSlot";
 import {API_URL} from "./config/config";
 import LogApi from "./LogApi";
+import {format} from "date-fns";
 
 class TimeSlotApi {
 
-    public async getTimeSlots(fromDate: Date, toDate: Date): Promise<TTimeSlot[]> {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-            throw new Error("JWT token not found in local storage");
+    public async getTimeSlots(userId: number | null, fromDate: Date, toDate: Date): Promise<TTimeSlot[]> {
+        if (userId === null) {
+            throw new Error("User ID is null");
         }
 
-        const fromDateString = fromDate.toISOString().substring(0, 10);
-        const toDateString = toDate.toISOString().substring(0, 10);
+        const fromDateString = format(fromDate, 'yyyy-MM-dd');
+        const toDateString = format(toDate, 'yyyy-MM-dd');
 
-        const response = await fetch(`${API_URL}/api/timeSlots?from=${fromDateString}&to=${toDateString}`, {
+        const response = await fetch(`${API_URL}/api/timeSlots/${userId}?from=${fromDateString}&to=${toDateString}`, {
             method: "GET",
-            headers: {
-                "Authorization": `${token}`,
-            }
         });
 
         if (!response.ok) {

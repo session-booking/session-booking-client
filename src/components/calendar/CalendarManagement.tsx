@@ -1,9 +1,9 @@
 import React, {useEffect, useRef, useState} from "react";
-import {TSession} from "../types/TSession";
-import LogApi from "../api/LogApi";
-import SessionApi from "../api/SessionApi";
-import {TDay} from "../types/TDay";
-import "../Calendar.css";
+import {TSession} from "../../types/TSession";
+import LogApi from "../../api/LogApi";
+import SessionApi from "../../api/SessionApi";
+import {TDay} from "../../types/TDay";
+import "../../Calendar.css";
 import CreateSessionButton from "./CreateSessionButton";
 import MonthlyCalendar from "./MonthlyCalendar";
 import Calendar from "./Calendar";
@@ -12,17 +12,17 @@ import {eachDayOfInterval, format, startOfWeek} from 'date-fns';
 import {enUS} from 'date-fns/locale';
 import Header from "./Header";
 import RightSidebar from "./RightSidebar";
-import {ContentType} from "../enums/ContentType";
+import {ContentType} from "../../enums/ContentType";
 import CreateSession from "./CreateSession";
 import Dialog from "./Dialog";
-import {TTimeSlot} from "../types/TTimeSlot";
-import TimeSlotApi from "../api/TimeSlotApi";
+import {TTimeSlot} from "../../types/TTimeSlot";
+import TimeSlotApi from "../../api/TimeSlotApi";
 import AddServiceButton from "./AddServiceButton";
 import AddService from "./AddService";
-import ServiceApi from "../api/ServiceApi";
-import {TService} from "../types/TService";
+import ServiceApi from "../../api/ServiceApi";
+import {TService} from "../../types/TService";
 import {useSelector} from "react-redux";
-import {RootState} from "../redux/state/store";
+import {RootState} from "../../redux/state/store";
 
 function CalendarManagement() {
 
@@ -63,6 +63,7 @@ function CalendarManagement() {
     const notificationButtonRef = useRef<HTMLButtonElement>(null);
     const settingsButtonRef = useRef<HTMLButtonElement>(null);
 
+    // User id from redux store
     const userId = useSelector((state: RootState) => state.user.id);
 
     const toggleSidebar = () => {
@@ -94,13 +95,13 @@ function CalendarManagement() {
     // Called when the component mounts (side effects code) and before it unmounts (cleanup code)
     useEffect(() => {
         async function fetchSessions() {
-            const allSessions = await SessionApi.getSessions(selectedWeek[0].date, selectedWeek[6].date);
-            setSessions(allSessions);
+            const sessions = await SessionApi.getSessions(selectedWeek[0].date, selectedWeek[6].date);
+            setSessions(sessions);
         }
 
         async function fetchTimeSlots() {
-            const allTimeSlots = await TimeSlotApi.getTimeSlots(selectedWeek[0].date, selectedWeek[6].date);
-            setTimeSlots(allTimeSlots);
+            const timeSlots = await TimeSlotApi.getTimeSlots(userId, selectedWeek[0].date, selectedWeek[6].date);
+            setTimeSlots(timeSlots);
         }
 
         async function fetchServices() {

@@ -1,4 +1,4 @@
-import {TDialogProps} from "../types/props/TDialogProps";
+import {TDialogProps} from "../../types/props/TDialogProps";
 import {IoClose} from "react-icons/io5";
 
 function Dialog({isDialogOpen, toggleDialog, children}: TDialogProps) {

@@ -3,15 +3,13 @@ import {FaCopy} from 'react-icons/fa';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import styled, {keyframes, css} from 'styled-components';
 import {useSelector} from "react-redux";
-import {RootState} from "../redux/state/store";
-import LogApi from "../api/LogApi";
+import {RootState} from "../../redux/state/store";
+import LogApi from "../../api/LogApi";
 import {encode as base64_encode} from 'base-64';
 
 function QRContent() {
     const [copied, setCopied] = useState(false);
-
     const userId = useSelector((state: RootState) => state.user.id);
-
     const encoder = new TextEncoder();
 
     const spin = keyframes`
