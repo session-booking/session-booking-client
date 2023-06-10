@@ -18,7 +18,7 @@ const BookingRoute: React.FC<TBookingRouteProps> = ({component: Component}) => {
 
     // TODO: Add a better way to handle invalid user id urls
     return (isUserIdValid && decodedId) ? <Component id={decodedId}/> :
-        <div className="p-5 flex justify-center items-center text-xl">404 Service Provider Does Not Exist</div>;
+        <div className="p-5 flex justify-center items-center text-xl">Service Provider Does Not Exist</div>;
 };
 
 export default BookingRoute;

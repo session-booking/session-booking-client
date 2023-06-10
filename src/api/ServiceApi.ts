@@ -57,10 +57,10 @@ class ServiceApi {
             }
         }).then((response) => {
             if (!response.ok) {
-                LogApi.logError(`Error updating session: ${response.statusText}`, {data: service});
+                LogApi.logError(`Error updating session: ${response.statusText}`, service);
             }
         }).catch((error) => {
-            LogApi.logError(error, {data: service});
+            LogApi.logError(error, service);
         });
     }
 

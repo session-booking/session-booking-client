@@ -1,3 +1,3 @@
-export type TMonthlyCalendarProps = {
+export type TWeeklyCalendarProps = {
     handleSelectedWeek: (selectedWeek: Date[]) => void;
 }

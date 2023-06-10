@@ -1,46 +1,23 @@
 import {useState} from "react";
 import {FiChevronLeft, FiChevronRight} from "react-icons/fi";
-import {TMonthlyCalendarProps} from "../../types/props/TMonthlyCalendarProps";
+import {TWeeklyCalendarProps} from "../../types/props/TWeeklyCalendarProps";
+import {CalendarHelper} from "../../helpers/CalendarHelper";
 
-function MonthlyCalendar({handleSelectedWeek}: TMonthlyCalendarProps) {
+function WeeklyCalendar({handleSelectedWeek}: TWeeklyCalendarProps) {
 
     // Current year and month
-    const [year, setYear] = useState(getCurrentYear());
-    const [month, setMonth] = useState(getCurrentMonth());
+    const [year, setYear] = useState(CalendarHelper.getCurrentYear());
+    const [month, setMonth] = useState(CalendarHelper.getCurrentMonth());
 
     // Weeks in the current month
-    const weeks = getAllDaysInCurrentMonth(year, month);
-
-    const isToday = (day: Date) => {
-        const today = new Date();
-        return (
-            day.getDate() === today.getDate() &&
-            day.getMonth() === today.getMonth() &&
-            day.getFullYear() === today.getFullYear()
-        );
-    };
+    const weeks = CalendarHelper.getAllDaysInCurrentMonth(year, month);
 
     const isCurrentWeek = (week: Date[]) => {
-        return week.some(isToday);
+        return week.some(CalendarHelper.isToday);
     };
 
     // Selected week
     const [selectedWeek, setSelectedWeek] = useState(getDefaultWeek());
-
-    const months = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
-    ];
 
     const isSelectedWeek = (week: Date[]) => {
         if (selectedWeek !== undefined) {
@@ -74,54 +51,22 @@ function MonthlyCalendar({handleSelectedWeek}: TMonthlyCalendarProps) {
         }
     }
 
-    function getMonthName(month: number) {
-        return months[month];
-    }
-
-    function getCurrentYear() {
-        const date = new Date();
-        return date.getFullYear();
-    }
-
-    function getCurrentMonth() {
-        const date = new Date();
-        return date.getMonth();
-    }
-
-    function getAllDaysInCurrentMonth(year: number, month: number) {
-        const weeks = [];
-
-        const firstDay = new Date(year, month, 1);
-        const firstDayWeekDay = (firstDay.getDay() + 6) % 7;
-
-        const prevMonthLastDay = new Date(year, month, 0).getDate();
-        const startDay = prevMonthLastDay - firstDayWeekDay + 1;
-
-        for (let i = 0; i < 6; i++) {
-            const week = [];
-            for (let j = 0; j < 7; j++) {
-                week.push(new Date(year, month - 1, startDay + i * 7 + j));
-            }
-            weeks.push(week);
-        }
-
-        return weeks;
-    }
-
     return (
-        <div className="monthly-calendar mt-5 bg-white p-4 rounded shadow">
+        <div className="mt-5 bg-white p-4 rounded shadow">
             <div className="flex justify-between items-center">
-                <p className="text-md font-light pl-2 pb-2">{getMonthName(month)} {year}</p>
+                <p className="text-md font-light pl-2 pb-2">{CalendarHelper.getMonthName(month)} {year}</p>
                 <div className="flex mb-2">
-                    <button className="p-1 rounded-full hover:bg-gray-100" onClick={() => setMonthAndYear(month - 1)}> <FiChevronLeft/> </button>
-                    <button className="p-1 rounded-full hover:bg-gray-100" onClick={() => setMonthAndYear(month + 1)}> <FiChevronRight/> </button>
+                    <button className="p-1 rounded-full hover:bg-gray-100" onClick={() => setMonthAndYear(month - 1)}>
+                        <FiChevronLeft/></button>
+                    <button className="p-1 rounded-full hover:bg-gray-100" onClick={() => setMonthAndYear(month + 1)}>
+                        <FiChevronRight/></button>
                 </div>
             </div>
             <table className="w-full text-center table-fixed">
                 <thead>
-                <tr className="text-xs font-semibold text-gray-500 uppercase">
+                <tr className="font-semibold text-gray-500 uppercase">
                     {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, index) => (
-                        <th key={index} className="w-1/7 py-1 text-[11px]">
+                        <th key={index} className="w-1/7 py-1 text-[14px]">
                             {day}
                         </th>
                     ))}
@@ -147,7 +92,7 @@ function MonthlyCalendar({handleSelectedWeek}: TMonthlyCalendarProps) {
                                                 day.getMonth() !== month
                                                     ? 'text-gray-300'
                                                     : 'text-gray-700'
-                                            } text-[11px] py-1`}
+                                            } text-[14px] py-1`}
                                         >
                                             {day.getDate()}
                                         </span>
@@ -163,4 +108,4 @@ function MonthlyCalendar({handleSelectedWeek}: TMonthlyCalendarProps) {
     );
 }
 
-export default MonthlyCalendar;
+export default WeeklyCalendar;

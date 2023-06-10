@@ -4,7 +4,7 @@ import "./index.css";
 import "./styles.css";
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import CalendarManagement from "./components/calendar/CalendarManagement";
-import Login from "./components/calendar/Login";
+import Login from "./components/auth/Login";
 import {Provider} from "react-redux";
 import store from "./redux/state/store";
 import ProtectedRoute from "./redux/ProtectedRoute";

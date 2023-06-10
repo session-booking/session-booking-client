@@ -89,10 +89,10 @@ class SessionApi {
             }
         }).then((response) => {
             if (!response.ok) {
-                LogApi.logError(`Error updating session: ${response.statusText}`, {data: session});
+                LogApi.logError(`Error updating session: ${response.statusText}`, session);
             }
         }).catch((error) => {
-            LogApi.logError(error, {data: session});
+            LogApi.logError(error, session);
         });
     }
 

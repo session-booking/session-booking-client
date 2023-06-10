@@ -5,7 +5,7 @@ import {format} from "date-fns";
 
 class TimeSlotApi {
 
-    public async getTimeSlots(userId: number | null, fromDate: Date, toDate: Date): Promise<TTimeSlot[]> {
+    public async getTimeSlotsByWeek(userId: number | null, fromDate: Date, toDate: Date): Promise<TTimeSlot[]> {
         if (userId === null) {
             throw new Error("User ID is null");
         }
@@ -13,7 +13,25 @@ class TimeSlotApi {
         const fromDateString = format(fromDate, 'yyyy-MM-dd');
         const toDateString = format(toDate, 'yyyy-MM-dd');
 
-        const response = await fetch(`${API_URL}/api/timeSlots/${userId}?from=${fromDateString}&to=${toDateString}`, {
+        const response = await fetch(`${API_URL}/api/timeSlots/week/${userId}?from=${fromDateString}&to=${toDateString}`, {
+            method: "GET",
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error fetching time slots: ${response.statusText}`);
+        }
+
+        return this.mapTimeSlots(await response.json());
+    }
+
+    public async getTimeSlotsByDay(userId: number | null, date: Date): Promise<TTimeSlot[]> {
+        if (userId === null) {
+            throw new Error("User ID is null");
+        }
+
+        const dateString = format(date, 'yyyy-MM-dd');
+
+        const response = await fetch(`${API_URL}/api/timeSlots/day/${userId}?date=${dateString}`, {
             method: "GET",
         });
 
@@ -64,7 +82,7 @@ class TimeSlotApi {
                 throw new Error(`Error deleting time slot: ${response.statusText}`);
             }
         }).catch((error) => {
-            LogApi.logError(error, {data: timeSlot});
+            LogApi.logError(error, timeSlot);
         });
     }
 

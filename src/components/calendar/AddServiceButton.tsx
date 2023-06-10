@@ -1,6 +1,7 @@
 import React from "react";
+import {TButtonProps} from "../../types/props/TButtonProps";
 
-function AddServiceButton({handleToggleDialog}: { handleToggleDialog: () => void }) {
+function AddServiceButton({handleToggleDialog}: TButtonProps) {
     return (
         <button
             onClick={handleToggleDialog}

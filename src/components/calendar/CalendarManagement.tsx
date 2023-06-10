@@ -5,7 +5,7 @@ import SessionApi from "../../api/SessionApi";
 import {TDay} from "../../types/TDay";
 import "../../Calendar.css";
 import CreateSessionButton from "./CreateSessionButton";
-import MonthlyCalendar from "./MonthlyCalendar";
+import WeeklyCalendar from "./WeeklyCalendar";
 import Calendar from "./Calendar";
 import Hamburger from "hamburger-react";
 import {eachDayOfInterval, format, startOfWeek} from 'date-fns';
@@ -100,7 +100,7 @@ function CalendarManagement() {
         }
 
         async function fetchTimeSlots() {
-            const timeSlots = await TimeSlotApi.getTimeSlots(userId, selectedWeek[0].date, selectedWeek[6].date);
+            const timeSlots = await TimeSlotApi.getTimeSlotsByWeek(userId, selectedWeek[0].date, selectedWeek[6].date);
             setTimeSlots(timeSlots);
         }
 
@@ -135,7 +135,7 @@ function CalendarManagement() {
             const newSession = await SessionApi.createSession(session);
             setSessions([...sessions, newSession]);
         } catch (error: any) {
-            LogApi.logError(error.toString(), {data: session});
+            LogApi.logError(error.toString(), session);
         }
     }
 
@@ -153,7 +153,7 @@ function CalendarManagement() {
             const newTimeSlot = await TimeSlotApi.createTimeSlot(timeSlot);
             setTimeSlots([...timeSlots, newTimeSlot]);
         } catch (error: any) {
-            LogApi.logError(error.toString(), {data: timeSlot});
+            LogApi.logError(error.toString(), timeSlot);
         }
     }
 
@@ -172,7 +172,7 @@ function CalendarManagement() {
             const newService = await ServiceApi.createService(service);
             setServices([...services, newService]);
         } catch (error: any) {
-            LogApi.logError(error.toString(), {data: service});
+            LogApi.logError(error.toString(), service);
         }
     }
 
@@ -257,7 +257,7 @@ function CalendarManagement() {
                 <div ref={leftSidebarRef} className={`left-sidebar-container ${leftSidebarVisible ? "visible" : ""}`}>
                     <div className="content-display">
                         <CreateSessionButton handleToggleDialog={toggleCreateSessionDialog}/>
-                        <MonthlyCalendar handleSelectedWeek={handleSelectedWeek}/>
+                        <WeeklyCalendar handleSelectedWeek={handleSelectedWeek}/>
                         <AddServiceButton handleToggleDialog={toggleAddServiceDialog}/>
                     </div>
                 </div>

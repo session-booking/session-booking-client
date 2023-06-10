@@ -1,7 +1,7 @@
 import {IoAddSharp} from "react-icons/io5";
+import {TButtonProps} from "../../types/props/TButtonProps";
 
-function CreateSessionButton({handleToggleDialog}: { handleToggleDialog: () => void }) {
-
+function CreateSessionButton({handleToggleDialog}: TButtonProps) {
     return (
         <button
             onClick={handleToggleDialog}

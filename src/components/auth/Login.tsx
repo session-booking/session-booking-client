@@ -235,7 +235,7 @@ function Login() {
         <div
             className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-400 via-indigo-600
             to-violet-800">
-            <div className="w-full max-w-xs bg-white shadow-md rounded px-8 pt-6 pb-8">
+            <div className="w-full max-w-sm bg-white shadow-md rounded px-8 pt-6 pb-8">
                 {popup.message && (
                     <div
                         className={`popup ${
@@ -249,7 +249,7 @@ function Login() {
                     <>
                         <h1 className="text-3xl font-normal text-gray-900 mb-6 text-center">Login</h1>
                         <form onSubmit={handleLogin} className="mb-4">
-                            <div className="mb-4">
+                            <div className="mb-4 text-[18px]">
                                 <input
                                     value={(user.email !== null) ? user.email : ""}
                                     onChange={handleEmailValueChange}
@@ -262,7 +262,7 @@ function Login() {
                                     required
                                 />
                             </div>
-                            <div className="mb-4 relative">
+                            <div className="mb-4 text-[18px] relative">
                                 <input
                                     value={(user.password !== null) ? user.password : ""}
                                     onChange={handlePasswordValueChange}
@@ -285,7 +285,7 @@ function Login() {
                             </div>
                             <div className="flex items-center justify-between mb-5">
                                 <button
-                                    className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                    className="text-[18px] bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                                     disabled={isLoading}
                                 >
                                     {isLoading ? (
@@ -295,13 +295,13 @@ function Login() {
                                     )}
                                 </button>
                                 <a className="inline-block align-baseline font-medium text-sm text-blue-500
-                                hover:text-blue-800"
+                                hover:text-blue-800 text-[16px]"
                                    href="#">
                                     Forgot Password?
                                 </a>
                             </div>
                         </form>
-                        <p className="text-center text-gray-700 text-sm">
+                        <p className="text-center text-gray-700 text-[16px]">
                             Don't have an account?{' '}
                             <a className="font-medium text-blue-500 hover:text-blue-800" href="#"
                                onClick={switchFormType}>
@@ -313,7 +313,7 @@ function Login() {
                     <>
                         <h1 className="text-3xl font-normal text-gray-900 mb-6 text-center">Sign Up</h1>
                         <form onSubmit={handleRegister} className="mb-4">
-                            <div className="mb-4">
+                            <div className="mb-4 text-[18px]">
                                 <input
                                     value={(user.username !== null) ? user.username : ""}
                                     onChange={handleUsernameValueChange}
@@ -327,7 +327,7 @@ function Login() {
                                 />
                                 <p className="text-xs text-red-500 mt-2">{validationMessages.username}</p>
                             </div>
-                            <div className="mb-4">
+                            <div className="mb-4 text-[18px]">
                                 <input
                                     value={(user.email !== null) ? user.email : ""}
                                     onChange={handleEmailValueChange}
@@ -340,7 +340,7 @@ function Login() {
                                     required
                                 />
                             </div>
-                            <div className="mb-4">
+                            <div className="mb-4 text-[18px]">
                                 <input
                                     value={(user.phoneNumber !== null) ? user.phoneNumber : ""}
                                     onChange={handlePhoneNumberValueChange}
@@ -353,7 +353,7 @@ function Login() {
                                 />
                                 <p className="text-xs text-red-500 mt-2">{validationMessages.phoneNumber}</p>
                             </div>
-                            <div className="mb-4">
+                            <div className="mb-4 text-[18px]">
                                 <div className="relative">
                                     <input
                                         value={(user.password !== null) ? user.password : ""}
@@ -380,7 +380,7 @@ function Login() {
                             <div className="flex items-center justify-center mb-5">
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded
-                                    focus:outline-none focus:shadow-outline"
+                                    focus:outline-none focus:shadow-outline text-[18px]"
                                 >
                                     {isLoading ? (
                                         <ClipLoader color="#ffffff" size={22} className="mt-1"/>
@@ -390,7 +390,7 @@ function Login() {
                                 </button>
                             </div>
                         </form>
-                        <p className="text-center text-gray-700 text-sm">
+                        <p className="text-center text-gray-700 text-[16px]">
                             Already have an account?{' '}
                             <a className="font-medium text-blue-500 hover:text-blue-800" href="#"
                                onClick={switchFormType}>
