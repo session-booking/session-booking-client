@@ -37,6 +37,7 @@ function QRContent() {
       border-radius: 5px;
       cursor: pointer;
       transition: background-color 0.2s ease-in-out;
+      margin: 20px;
 
       &:hover {
         background: #e1e1e1;

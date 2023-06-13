@@ -85,8 +85,7 @@
     z-index: 15;
     transform: translateX(0);
     transition: transform 0.1s ease-in-out;
-    padding: 20px;
-    margin-top: 49px;
+    margin-top: 55px;
     border-left: 1px solid #dee2e6;
 }
 
@@ -106,7 +105,7 @@
         z-index: 15;
         transform: translateX(0);
         transition: transform 0.1s ease-in-out;
-        margin-top: 49px;
+        margin-top: 55px;
         border-right: 1px solid #dee2e6;
     }
 

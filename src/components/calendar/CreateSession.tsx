@@ -4,11 +4,11 @@ import {TSession} from "../../types/TSession";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import TimePicker from "./TimePicker";
+import {CommonsHelper} from "../../helpers/CommonsHelper";
 
 function CreateSession({hideSidebar, handleCreate, handleToggleDialog}: TCreateSessionProps) {
     const [session, setSession] = useState<TSession>({
         date: null,
-        open: false,
         startTime: "00:00",
         endTime: "00:00",
         clientEmail: "",
@@ -25,12 +25,11 @@ function CreateSession({hideSidebar, handleCreate, handleToggleDialog}: TCreateS
 
         setSession({
             date: null,
-            open: false,
             startTime: "00:00",
             endTime: "00:00",
             clientEmail: "",
             clientName: "",
-            color: "#f59e0b",
+            color: CommonsHelper.generateRandomColor(),
         });
 
         handleToggleDialog();
@@ -58,11 +57,10 @@ function CreateSession({hideSidebar, handleCreate, handleToggleDialog}: TCreateS
         });
     }
 
-    function handleOpenValueChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const {checked} = e.target;
+    function handleColorValueChange(e: React.ChangeEvent<HTMLInputElement>) {
         setSession({
             ...session,
-            open: checked,
+            color: e.target.value,
         });
     }
 
@@ -70,13 +68,6 @@ function CreateSession({hideSidebar, handleCreate, handleToggleDialog}: TCreateS
         setSession({
             ...session,
             clientEmail: e.target.value,
-        });
-    }
-
-    function handleColorValueChange(e: React.ChangeEvent<HTMLInputElement>) {
-        setSession({
-            ...session,
-            color: e.target.value,
         });
     }
 
@@ -120,18 +111,7 @@ function CreateSession({hideSidebar, handleCreate, handleToggleDialog}: TCreateS
                                 </label>
                             </div>
                         </div>
-                        <div className="-mx-3 flex flex-wrap">
-                            <div className="w-full px-3 sm:w-1/2">
-                                <label className="text-black text-base font-light">
-                                    Is the session open?
-                                    <input
-                                        checked={session.open}
-                                        onChange={handleOpenValueChange}
-                                        type="checkbox"
-                                        className="h-4 w-4 mt-1 float-left mr-2 cursor-pointer"
-                                    />
-                                </label>
-                            </div>
+                        <div className="w-full">
                             <div className="w-full px-3 sm:w-1/2">
                                 <label className="text-black text-base font-light">
                                     Pick color

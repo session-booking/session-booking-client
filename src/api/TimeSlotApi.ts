@@ -5,16 +5,21 @@ import {format} from "date-fns";
 
 class TimeSlotApi {
 
-    public async getTimeSlotsByWeek(userId: number | null, fromDate: Date, toDate: Date): Promise<TTimeSlot[]> {
-        if (userId === null) {
-            throw new Error("User ID is null");
+    public async getTimeSlotsByDateInterval(fromDate: Date, toDate: Date): Promise<TTimeSlot[]> {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            throw new Error("JWT token not found in local storage");
         }
 
         const fromDateString = format(fromDate, 'yyyy-MM-dd');
         const toDateString = format(toDate, 'yyyy-MM-dd');
 
-        const response = await fetch(`${API_URL}/api/timeSlots/week/${userId}?from=${fromDateString}&to=${toDateString}`, {
+        const response = await fetch(`${API_URL}/api/timeSlots/interval?from=${fromDateString}&to=${toDateString}`, {
             method: "GET",
+            headers: {
+                "Authorization": `${token}`,
+            }
         });
 
         if (!response.ok) {
@@ -80,6 +85,12 @@ class TimeSlotApi {
         }).then((response) => {
             if (!response.ok) {
                 throw new Error(`Error deleting time slot: ${response.statusText}`);
+            } else {
+                return response.json();
+            }
+        }).then((data) => {
+            if (data[0] === 0) {
+                throw new Error(`No time slot with ID ${timeSlot.id} found`);
             }
         }).catch((error) => {
             LogApi.logError(error, timeSlot);

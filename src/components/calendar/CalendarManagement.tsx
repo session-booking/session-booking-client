@@ -23,6 +23,11 @@ import ServiceApi from "../../api/ServiceApi";
 import {TService} from "../../types/TService";
 import {useSelector} from "react-redux";
 import {RootState} from "../../redux/state/store";
+import {io} from "socket.io-client";
+import {API_URL} from "../../api/config/config";
+import BookingApi from "../../api/BookingApi";
+import {TBooking} from "../../types/TBooking";
+import {CommonsHelper} from "../../helpers/CommonsHelper";
 
 function CalendarManagement() {
 
@@ -37,6 +42,9 @@ function CalendarManagement() {
 
     // Services state
     const [services, setServices] = useState<TService[]>([]);
+
+    // Bookings state
+    const [bookings, setBookings] = useState<TBooking[]>([]);
 
     // Left sidebar state
     const [leftSidebarVisible, setLeftSidebarVisible] = useState(false);
@@ -94,19 +102,44 @@ function CalendarManagement() {
 
     // Called when the component mounts (side effects code) and before it unmounts (cleanup code)
     useEffect(() => {
+        const socket = io(API_URL);
+
+        socket.on(`booking-update-${userId}`, (data) => {
+            setBookings(prevBookings => [
+                ...prevBookings,
+                {
+                    id: data.id,
+                    clientName: data.clientName,
+                    clientEmail: data.clientEmail,
+                    clientPhone: data.clientPhone,
+                    date: data.date,
+                    startTime: data.startTime,
+                    endTime: data.endTime,
+                    status: data.status,
+                    userId: data.userId,
+                    serviceId: data.serviceId,
+                    timeSlotId: data.timeSlotId,
+                }]);
+        });
+
         async function fetchSessions() {
-            const sessions = await SessionApi.getSessions(selectedWeek[0].date, selectedWeek[6].date);
+            const sessions = await SessionApi.getSessionsByDateInterval(selectedWeek[0].date, selectedWeek[6].date);
             setSessions(sessions);
         }
 
         async function fetchTimeSlots() {
-            const timeSlots = await TimeSlotApi.getTimeSlotsByWeek(userId, selectedWeek[0].date, selectedWeek[6].date);
+            const timeSlots = await TimeSlotApi.getTimeSlotsByDateInterval(selectedWeek[0].date, selectedWeek[6].date);
             setTimeSlots(timeSlots);
         }
 
         async function fetchServices() {
             const allServices = await ServiceApi.getServices(userId);
             setServices(allServices);
+        }
+
+        async function fetchBookings() {
+            const bookings = await BookingApi.getAllBookings();
+            setBookings(bookings);
         }
 
         document.addEventListener("click", handleClickOutsideForLeftSidebar, true);
@@ -124,7 +157,12 @@ function CalendarManagement() {
             LogApi.logError(error.toString(), null);
         });
 
+        fetchBookings().catch((error) => {
+            LogApi.logError(error.toString(), null);
+        });
+
         return () => {
+            socket.disconnect();
             document.removeEventListener("click", handleClickOutsideForLeftSidebar, true);
             document.removeEventListener("click", handleClickOutsideForRightSidebar, true);
         };
@@ -224,9 +262,38 @@ function CalendarManagement() {
         }
     }
 
+    async function handleAcceptedNotification(booking: TBooking) {
+        try {
+            await BookingApi.deleteBooking(booking);
+            setBookings(bookings.filter((b) => b.id !== booking.id));
+
+            const newSession = await SessionApi.createSession({
+                date: booking.date,
+                startTime: booking.startTime,
+                endTime: booking.endTime,
+                clientName: booking.clientName,
+                clientEmail: booking.clientEmail,
+                color: CommonsHelper.generateRandomColor(),
+            });
+            setSessions([...sessions, newSession]);
+        } catch (error: any) {
+            LogApi.logError(error.toString(), booking);
+        }
+    }
+
+    async function handleDeclinedNotification(booking: TBooking) {
+        try {
+            await BookingApi.deleteBooking(booking);
+            setBookings(bookings.filter((b) => b.id !== booking.id));
+        } catch (error: any) {
+            LogApi.logError(error.toString(), booking);
+        }
+    }
+
     return (
         <>
             <Header
+                notificationCount={bookings.length}
                 qrButtonRef={qrButtonRef}
                 notificationButtonRef={notificationButtonRef}
                 settingsButtonRef={settingsButtonRef}
@@ -263,7 +330,13 @@ function CalendarManagement() {
                 </div>
                 <div ref={rightSidebarRef}
                      className={`right-sidebar-container ${rightSidebarVisible ? "visible" : ""}`}>
-                    <RightSidebar content={rightSidebarContent}/>
+                    <RightSidebar
+                        content={rightSidebarContent}
+                        services={services}
+                        bookings={bookings}
+                        handleAcceptedNotification={handleAcceptedNotification}
+                        handleDeclinedNotification={handleDeclinedNotification}
+                    />
                 </div>
                 <div ref={hamburgerRef} className="hamburger-visibility">
                     <Hamburger

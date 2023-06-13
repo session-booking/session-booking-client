@@ -3,7 +3,7 @@ import {BsDot} from "react-icons/all";
 import React from "react";
 import {TAvailableSession} from "../../types/TAvailableSession";
 
-function AvailableSessions({timeSlots, bookings, selectedService, selectedAvailableSession, handleSelectedAvailableSession}: TAvailableSessionsProps) {
+function AvailableSessions({timeSlots, bookings, sessions, selectedService, selectedAvailableSession, handleSelectedAvailableSession}: TAvailableSessionsProps) {
 
     const availableSessions = getAvailableSessions();
 
@@ -11,55 +11,67 @@ function AvailableSessions({timeSlots, bookings, selectedService, selectedAvaila
         let availableSessions: TAvailableSession[] = [];
 
         for (const timeSlot of timeSlots) {
-            const timeSlotMin = calculateInterval(timeSlot.startTime, timeSlot.endTime);
+            const timeSlotStartMin = timeToMinutes(timeSlot.startTime);
+            const timeSlotEndMin = timeToMinutes(timeSlot.endTime);
+            const serviceLength = selectedService != null ? selectedService.length : 0;
 
-            let bookingsMinSum = 0;
+            let busyMinutes = new Set<number>();
+
             for (const booking of bookings) {
                 if (timeSlot.id === booking.timeSlotId) {
-                    const bookingMin = calculateInterval(booking.startTime, booking.endTime);
-                    bookingsMinSum = bookingsMinSum + bookingMin;
+                    const bookingStartMin = timeToMinutes(booking.startTime);
+                    const bookingEndMin = timeToMinutes(booking.endTime);
+                    for (let i = bookingStartMin; i < bookingEndMin; i++) {
+                        busyMinutes.add(i);
+                    }
                 }
             }
 
-            const availableTime = timeSlotMin - bookingsMinSum;
-            if (selectedService != null && availableTime >= selectedService.length) {
-                availableSessions.push({
-                    startTime: addMinutesToTime(timeSlot.startTime, bookingsMinSum),
-                    endTime: addMinutesToTime(timeSlot.startTime, bookingsMinSum + selectedService.length),
-                    date: timeSlot.date,
-                    timeSlotId: timeSlot.id
-                });
+            for (const session of sessions) {
+                const sessionStartMin = timeToMinutes(session.startTime);
+                const sessionEndMin = timeToMinutes(session.endTime);
+                for (let i = sessionStartMin; i < sessionEndMin; i++) {
+                    if (i >= timeSlotStartMin && i < timeSlotEndMin) {
+                        busyMinutes.add(i);
+                    }
+                }
+            }
+
+            let currentStartMin = timeSlotStartMin;
+            while (currentStartMin + serviceLength <= timeSlotEndMin) {
+                let isFree = true;
+                for (let i = 0; i < serviceLength; i++) {
+                    if (busyMinutes.has(currentStartMin + i)) {
+                        isFree = false;
+                        currentStartMin += i + 1;
+                        break;
+                    }
+                }
+                if (isFree) {
+                    availableSessions.push({
+                        startTime: minutesToTime(currentStartMin),
+                        endTime: minutesToTime(currentStartMin + serviceLength),
+                        date: timeSlot.date,
+                        timeSlotId: timeSlot.id
+                    });
+                    break;
+                }
             }
         }
 
         return availableSessions;
     }
 
-    function calculateInterval(startTime: string, endTime: string) {
-        const start = new Date();
-        const end = new Date();
 
-        const [startHour, startMinute] = startTime.split(":").map(Number);
-        const [endHour, endMinute] = endTime.split(":").map(Number);
-
-        start.setHours(startHour, startMinute);
-        end.setHours(endHour, endMinute);
-
-        const diffInMilliseconds = end.getTime() - start.getTime();
-        return diffInMilliseconds / (1000 * 60)
+    function timeToMinutes(time: string): number {
+        const [hours, minutes] = time.split(":").map(Number);
+        return hours * 60 + minutes;
     }
 
-    function addMinutesToTime(time: string, minutes: number) {
-        const [hour, minute] = time.split(":").map(Number);
-        const date = new Date();
-
-        date.setHours(hour, minute);
-        date.setMinutes(date.getMinutes() + minutes);
-
-        const newHour = date.getHours().toString().padStart(2, '0');
-        const newMinute = date.getMinutes().toString().padStart(2, '0');
-
-        return `${newHour}:${newMinute}`;
+    function minutesToTime(minutes: number): string {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
     }
 
     function isSessionSelected(availableSession: TAvailableSession) {

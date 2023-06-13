@@ -5,14 +5,35 @@ import LogApi from "./LogApi";
 
 class BookingApi {
 
-    public async getBookings(userId: number | null, date: Date): Promise<TBooking[]> {
+    public async getAllBookings(): Promise<TBooking[]> {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            throw new Error("JWT token not found in local storage");
+        }
+
+        const response = await fetch(`${API_URL}/api/bookings`, {
+            method: "GET",
+            headers: {
+                "Authorization": `${token}`,
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error fetching bookings: ${response.statusText}`);
+        }
+
+        return this.mapBookings(await response.json());
+    }
+
+    public async getBookingsByDay(userId: number | null, date: Date): Promise<TBooking[]> {
         if (userId === null) {
             throw new Error("User ID is null");
         }
 
         const dateString = format(date, 'yyyy-MM-dd');
 
-        const response = await fetch(`${API_URL}/api/bookings/${userId}?date=${dateString}`, {
+        const response = await fetch(`${API_URL}/api/bookings/day/${userId}?date=${dateString}`, {
             method: "GET",
         });
 
@@ -45,6 +66,12 @@ class BookingApi {
         }).then((response) => {
             if (!response.ok) {
                 throw new Error(`Error deleting booking: ${response.statusText}`);
+            } else {
+                return response.json();
+            }
+        }).then((data) => {
+            if (data[0] === 0) {
+                throw new Error(`No booking with ID ${booking.id} found`);
             }
         }).catch((error) => {
             LogApi.logError(error, booking);

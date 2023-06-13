@@ -2,6 +2,7 @@ import React, {useEffect, useRef} from "react";
 import {TSessionWindowProps} from "../../types/props/TSessionWindowProps";
 import {MdDeleteForever, MdEdit} from "react-icons/md";
 import {TSession} from "../../types/TSession";
+import {CommonsHelper} from "../../helpers/CommonsHelper";
 
 function SessionWindow({session, visible, onClose, clickEvent, handleDeleteSession}: TSessionWindowProps) {
     const infoWindowRef = useRef<HTMLDivElement>(null);
@@ -9,7 +10,7 @@ function SessionWindow({session, visible, onClose, clickEvent, handleDeleteSessi
     const calculateWindowPosition = () => {
         if (!clickEvent) return {top: 0, right: 0, left: "auto"};
 
-        const buffer = 10; // Space between the clicked element and the info window
+        const buffer = 10;
         const windowWidth = window.innerWidth;
         const windowHeight = window.innerHeight;
         const halfWindowWidth = windowWidth / 2;
@@ -17,7 +18,7 @@ function SessionWindow({session, visible, onClose, clickEvent, handleDeleteSessi
         const clickX = clickEvent.clientX;
         const clickY = clickEvent.clientY;
 
-        const windowSize = 256; // Width of the shown window
+        const windowSize = 256;
 
         if (windowWidth <= 768) {
             return {
@@ -81,16 +82,6 @@ function SessionWindow({session, visible, onClose, clickEvent, handleDeleteSessi
         onClose();
     }
 
-    function formatDate(date: Date) {
-        const sessionDate = new Date(date);
-
-        const year = sessionDate.getFullYear();
-        const month = ('0' + (sessionDate.getMonth() + 1)).slice(-2);
-        const day = ('0' + sessionDate.getDate()).slice(-2);
-
-        return `${day}. ${month}. ${year}`;
-    }
-
     return (
         <div
             ref={infoWindowRef}
@@ -117,7 +108,7 @@ function SessionWindow({session, visible, onClose, clickEvent, handleDeleteSessi
                     {(session.date !== null) ?
                         <div className="flex">
                             <p className="text-base font-normal sm:text-lg">Date:&nbsp;</p>
-                            <p className="text-base font-light sm:text-lg">{formatDate(session.date)}</p>
+                            <p className="text-base font-light sm:text-lg">{CommonsHelper.formatDate(session.date)}</p>
                         </div> : null}
                     <div className="flex">
                         <p className="text-base font-normal sm:text-lg">Time:&nbsp;</p>

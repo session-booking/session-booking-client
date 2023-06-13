@@ -5,7 +5,7 @@ import QRContent from "./QRContent";
 import NotificationContent from "./NotificationContent";
 import SettingsContent from "./SettingsContent";
 
-function RightSidebar({content}: TRightSidebarProps) {
+function RightSidebar({content, bookings, services, handleAcceptedNotification, handleDeclinedNotification}: TRightSidebarProps) {
     return (
         <SwitchTransition mode="out-in">
             <CSSTransition
@@ -16,7 +16,13 @@ function RightSidebar({content}: TRightSidebarProps) {
             >
                 <div>
                     {content === ContentType.QR_CONTENT && <QRContent/>}
-                    {content === ContentType.NOTIFICATION_CONTENT && <NotificationContent/>}
+                    {content === ContentType.NOTIFICATION_CONTENT &&
+                        <NotificationContent
+                            bookings={bookings}
+                            services={services}
+                            handleAcceptedNotification={handleAcceptedNotification}
+                            handleDeclinedNotification={handleDeclinedNotification}
+                        />}
                     {content === ContentType.SETTINGS_CONTENT && <SettingsContent/>}
                 </div>
             </CSSTransition>

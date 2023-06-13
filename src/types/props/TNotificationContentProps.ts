@@ -1,9 +1,7 @@
-import {ContentType} from "../../enums/ContentType";
 import {TBooking} from "../TBooking";
 import {TService} from "../TService";
 
-export type TRightSidebarProps = {
-    content: ContentType;
+export type TNotificationContentProps = {
     bookings: TBooking[];
     services: TService[];
     handleAcceptedNotification: (booking: TBooking) => void;

@@ -15,6 +15,8 @@ import {TAvailableSession} from "../../types/TAvailableSession";
 import ClientDetails from "./ClientDetails";
 import {TClientDetails} from "../../types/TClientDetails";
 import BookingDetails from "./BookingDetails";
+import {TSession} from "../../types/TSession";
+import SessionApi from "../../api/SessionApi";
 
 function SessionBooking({id}: TSessionBookingProps) {
     // Form step state
@@ -28,6 +30,9 @@ function SessionBooking({id}: TSessionBookingProps) {
 
     // Bookings state
     const [bookings, setBookings] = useState<TBooking[]>([]);
+
+    // Sessions state
+    const [sessions, setSessions] = useState<TSession[]>([]);
 
     // Selected service state
     const [selectedService, setSelectedService] = useState<TService | null>(null);
@@ -72,6 +77,10 @@ function SessionBooking({id}: TSessionBookingProps) {
         });
 
         fetchBookings(new Date()).catch((error) => {
+            LogApi.logError(error.toString(), null);
+        });
+
+        fetchSessions(new Date()).catch((error) => {
             LogApi.logError(error.toString(), null);
         });
 
@@ -125,8 +134,13 @@ function SessionBooking({id}: TSessionBookingProps) {
     }
 
     async function fetchBookings(date: Date) {
-        const bookings = await BookingApi.getBookings(Number(id), date);
+        const bookings = await BookingApi.getBookingsByDay(Number(id), date);
         setBookings(bookings);
+    }
+
+    async function fetchSessions(date: Date) {
+        const sessions = await SessionApi.getSessionsByDay(Number(id), date);
+        setSessions(sessions);
     }
 
     const goBack = () => {
@@ -144,6 +158,10 @@ function SessionBooking({id}: TSessionBookingProps) {
         });
 
         fetchBookings(utcDay).catch((error) => {
+            LogApi.logError(error.toString(), null);
+        });
+
+        fetchSessions(utcDay).catch((error) => {
             LogApi.logError(error.toString(), null);
         });
 
@@ -208,8 +226,8 @@ function SessionBooking({id}: TSessionBookingProps) {
 
                     {bookingMessage && (
                         <div className="mb-4 flex flex-col justify-center items-center text-green-600">
-                            <p className="text-2xl font-semibold mb-4">{bookingMessage}</p>
-                            <div className="border-2 border-green-600 p-3 rounded-full"><FaCheck size={24} /></div>
+                            <p className="text-2xl font-normal mb-4">{bookingMessage}</p>
+                            <div className="border-2 border-green-600 p-3 rounded-full"><FaCheck size={20} /></div>
                         </div>
                     )}
 
@@ -244,6 +262,7 @@ function SessionBooking({id}: TSessionBookingProps) {
                                 <AvailableSessions
                                     timeSlots={timeSlots}
                                     bookings={bookings}
+                                    sessions={sessions}
                                     selectedService={selectedService}
                                     selectedAvailableSession={selectedAvailableSession}
                                     handleSelectedAvailableSession={handleSelectedAvailableSession}
@@ -276,7 +295,7 @@ function SessionBooking({id}: TSessionBookingProps) {
 
                     <div className="mt-6 flex justify-end">
                         {step !== 1 && !isBooked && (<button
-                            className="px-4 py-2 text-blue-500 border border-blue-500 hover:bg-blue-200 rounded focus:outline-none
+                            className="px-4 py-2 text-blue-500 border border-blue-500 hover:bg-blue-100 rounded focus:outline-none
                             focus:shadow-outline transition duration-300 text-xl"
                             type="button" onClick={goBack} disabled={step === 1}>Previous</button>)}
                         {!isBooked && (<button

@@ -349,6 +349,7 @@ function Login() {
                                     duration-100"
                                     id="phone_number_register"
                                     type="tel"
+                                    pattern="[0-9]{9}"
                                     placeholder="Phone Number (Optional)"
                                 />
                                 <p className="text-xs text-red-500 mt-2">{validationMessages.phoneNumber}</p>
