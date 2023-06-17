@@ -12,6 +12,10 @@
     display: none;
 }
 
+.highlighted {
+    background-color: rgba(59, 130, 246, 0.2);
+}
+
 @media screen and (max-width: 480px) {
     .scrollable {
         max-height: calc(100vh - 250px);

@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from "react";
 import {TSessionWindowProps} from "../../types/props/TSessionWindowProps";
-import {MdDeleteForever, MdEdit} from "react-icons/md";
+import {MdDeleteForever} from "react-icons/md";
 import {TSession} from "../../types/TSession";
 import {CommonsHelper} from "../../helpers/CommonsHelper";
 
@@ -95,9 +95,6 @@ function SessionWindow({session, visible, onClose, clickEvent, handleDeleteSessi
             <div className="flex justify-between items-start">
                 <h3 className="text-xl font-normal mb-2 sm:text-2xl">Session Info</h3>
                 <div className="flex mt-1">
-                    <button className="focus:outline-none pl-2">
-                        <MdEdit className="edit-icon"/>
-                    </button>
                     <button className="focus:outline-none" onClick={() => handleDeleteSessionButtonClick(session)}>
                         <MdDeleteForever className="delete-icon"/>
                     </button>
@@ -115,9 +112,19 @@ function SessionWindow({session, visible, onClose, clickEvent, handleDeleteSessi
                         <p className="text-base font-light sm:text-lg">{session.startTime} - {session.endTime}</p>
                     </div>
                     <div className="flex">
+                        <p className="text-base font-normal sm:text-lg">Name:&nbsp;</p>
+                        <p className="text-base font-light sm:text-lg">{session.clientName}</p>
+                    </div>
+                    <div className="flex">
                         <p className="text-base font-normal sm:text-lg">Email:&nbsp;</p>
                         <p className="text-base font-light sm:text-lg">{session.clientEmail}</p>
                     </div>
+                    {(session.clientPhone !== '') ? (
+                        <div className="flex">
+                            <p className="text-base font-normal sm:text-lg">Phone:&nbsp;</p>
+                            <p className="text-base font-light sm:text-lg">{session.clientPhone}</p>
+                        </div>
+                    ) : null}
                 </div>
             )}
         </div>

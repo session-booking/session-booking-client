@@ -4,6 +4,7 @@ export type TSession = {
     startTime: string;
     endTime: string;
     clientEmail: string;
+    clientPhone: string;
     clientName: string;
     color: string;
 };

@@ -61,8 +61,17 @@ class BookingApi {
     }
 
     public deleteBooking(booking: TBooking): Promise<void> {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            throw new Error("JWT token not found in local storage");
+        }
+
         return fetch(`${API_URL}/api/booking/${booking.id}`, {
             method: "DELETE",
+            headers: {
+                "Authorization": `${token}`,
+            }
         }).then((response) => {
             if (!response.ok) {
                 throw new Error(`Error deleting booking: ${response.statusText}`);

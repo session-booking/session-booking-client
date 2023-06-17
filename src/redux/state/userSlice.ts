@@ -34,8 +34,12 @@ const userSlice = createSlice({
             state.phoneNumber = null;
             state.isLoggedIn = false;
         },
+        updateUser: (state, action: PayloadAction<Partial<UserState>>) => {
+            state.username = action.payload.username ?? state.username;
+            state.phoneNumber = action.payload.phoneNumber ?? state.phoneNumber;
+        },
     },
 });
 
-export const {loginUser, logoutUser} = userSlice.actions;
+export const {loginUser, logoutUser, updateUser} = userSlice.actions;
 export default userSlice.reducer;

@@ -92,8 +92,8 @@ function SessionBooking({id}: TSessionBookingProps) {
             setErrorMessage('Please select a service before continuing.');
         } else if (step === 2 && !selectedAvailableSession) {
             setErrorMessage('Please select an available session before continuing.');
-        } else if (step === 3 && (!clientDetails.clientName || !clientDetails.clientSurname || !clientDetails.clientEmail || !clientDetails.clientPhone)) {
-            setErrorMessage('Please fill in all fields before continuing.');
+        } else if (step === 3 && (!clientDetails.clientName || !clientDetails.clientSurname || !clientDetails.clientEmail)) {
+            setErrorMessage('Please fill in all required fields before continuing.');
         } else {
             setErrorMessage(undefined);
             if (step < 4) {

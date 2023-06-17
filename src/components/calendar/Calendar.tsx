@@ -11,7 +11,17 @@ import Dialog from "./Dialog";
 import SetTimeSlots from "./SetTimeSlots";
 import {TTimeSlot} from "../../types/TTimeSlot";
 
-function Calendar({selectedWeek, sessions, timeSlots, handleDeleteSession, handleCreateTimeSlot, handleDeleteTimeSlot}: TCalendarProps) {
+function Calendar({
+                      highlightedRef,
+                      scrollableContainerRef,
+                      scrollToHighlighted,
+                      selectedWeek,
+                      sessions,
+                      timeSlots,
+                      handleDeleteSession,
+                      handleCreateTimeSlot,
+                      handleDeleteTimeSlot
+                  }: TCalendarProps) {
     const hours = Array.from({length: 24}, (_, i) => i);
     const quarterHours = Array.from({length: 96}, (_, i) => i);
 
@@ -54,6 +64,10 @@ function Calendar({selectedWeek, sessions, timeSlots, handleDeleteSession, handl
             window.removeEventListener('resize', handleResize);
         };
     }, [selectedWeek]);
+
+    useEffect(() => {
+        scrollToHighlighted();
+    }, [displayedDays]);
 
     function handleSessionClick(session: TSession, event: React.MouseEvent<HTMLDivElement>) {
         setClickedSession(session);
@@ -229,7 +243,8 @@ function Calendar({selectedWeek, sessions, timeSlots, handleDeleteSession, handl
                                              className="flex flex-col">
                                             <div className="text-center">
                                                 <div className="text-sm font-thin ml-0.5">{day.name}.</div>
-                                                <div className="text-3xl font-thin pb-1">{getDateDay(day.displayDate)}</div>
+                                                <div
+                                                    className="text-3xl font-thin pb-1">{getDateDay(day.displayDate)}</div>
                                                 <button
                                                     onClick={() => handleTimeSlotsButtonClick(day)}
                                                     className="text-blue-500 rounded-full p-1 hover:bg-blue-100 ml-0.5
@@ -252,7 +267,7 @@ function Calendar({selectedWeek, sessions, timeSlots, handleDeleteSession, handl
                             </div>
                         </div>
 
-                        <div className="grid calendar-grid scrollable">
+                        <div ref={scrollableContainerRef} className="grid calendar-grid scrollable">
                             <div className="col-span-1">
                                 {hours.map((hour) => (
                                     <div key={hour} className="h-16 flex justify-end">
@@ -260,46 +275,69 @@ function Calendar({selectedWeek, sessions, timeSlots, handleDeleteSession, handl
                                     </div>
                                 ))}
                             </div>
-                            {displayedDays.map((day, index) => (
-                                <div key={String(day.displayDate)}
-                                     className="col-span-1 mt-3"
-                                     style={{display: display[index]}}
-                                >
-                                    <div className="relative">
-                                        {quarterHours.map((quarter, index) => {
-                                            const getTime = (index: number) => {
-                                                const minutes = (index + 1) * 15;
-                                                const hours = Math.floor(minutes / 60);
-                                                const remainingMinutes = minutes % 60;
+                            {displayedDays.map((day, index) => {
+                                const isToday = (date: Date) => {
+                                    const today = new Date();
+                                    return date.getDate() === today.getDate() &&
+                                        date.getMonth() === today.getMonth() &&
+                                        date.getFullYear() === today.getFullYear();
+                                }
 
-                                                return `${hours}-${remainingMinutes}`;
-                                            };
+                                return (
+                                    <div key={String(day.displayDate)}
+                                         className="col-span-1 mt-3"
+                                         style={{display: display[index]}}
+                                    >
+                                        <div className="relative">
+                                            {quarterHours.map((quarter, index) => {
+                                                const getTime = (index: number) => {
+                                                    const minutes = (index + 1) * 15;
+                                                    const hours = Math.floor(minutes / 60);
+                                                    const remainingMinutes = minutes % 60;
 
-                                            const getQuarterClasses = (index: number) => {
-                                                const isFirst = index === 0;
-                                                const isEveryFourth = (index + 1) % 4 === 0;
+                                                    return `${hours}-${remainingMinutes}`;
+                                                };
 
-                                                let timeClass = `${getTime(index)}`
-                                                let styleClasses = isFirst
-                                                    ? 'h-16/4 bg-white border-t border-gray-400' : isEveryFourth
-                                                        ? 'h-16/4 bg-white border-b border-gray-400' : 'h-16/4 bg-white';
+                                                const getCurrentTime = () => {
+                                                    const date = new Date();
+                                                    const hours = date.getHours();
+                                                    const minutes = Math.floor(date.getMinutes() / 15) * 15;
 
-                                                return `${timeClass} ${styleClasses}`;
-                                            };
+                                                    return `${hours}-${minutes}`;
+                                                }
 
-                                            return (
-                                                <div
-                                                    key={`${day}-${quarter}`}
-                                                    className={getQuarterClasses(index)}
-                                                ></div>
-                                            );
-                                        })}
+                                                const getQuarterClasses = (index: number) => {
+                                                    const isFirst = index === 0;
+                                                    const isEveryFourth = (index + 1) % 4 === 0;
 
-                                        {renderTimeSlots(day)}
-                                        {renderSessions(day)}
+                                                    let timeClass = `${getTime(index)}`
+
+                                                    const isIntervalNow = (getTime(index) === getCurrentTime() && isToday(day.date))
+                                                    let backgroundColor = (isIntervalNow) ? 'bg-blue-500 bg-opacity-50 rounded' : 'bg-white';
+
+                                                    let styleClasses = isFirst
+                                                        ? `h-16/4 ${backgroundColor} border-t border-gray-400` : isEveryFourth
+                                                            ? `h-16/4 ${backgroundColor} border-b border-gray-400` : `h-16/4 ${backgroundColor}`;
+
+                                                    return `${(isIntervalNow) ? "highlighted" : ""} ${timeClass} ${styleClasses}`;
+                                                };
+
+                                                return (
+                                                    <div
+                                                        key={`${day}-${quarter}`}
+                                                        ref={getQuarterClasses(index).includes('highlighted') ? highlightedRef : null}
+                                                        className={getQuarterClasses(index)}
+                                                    ></div>
+                                                );
+                                            })}
+
+                                            {renderTimeSlots(day)}
+                                            {renderSessions(day)}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
+
                         </div>
                     </div>
                 </div>

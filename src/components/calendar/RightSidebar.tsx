@@ -3,9 +3,22 @@ import {ContentType} from "../../enums/ContentType";
 import {TRightSidebarProps} from "../../types/props/TRightSidebarProps";
 import QRContent from "./QRContent";
 import NotificationContent from "./NotificationContent";
-import SettingsContent from "./SettingsContent";
+import UserSettingsContent from "./UserSettingsContent";
 
-function RightSidebar({content, bookings, services, handleAcceptedNotification, handleDeclinedNotification}: TRightSidebarProps) {
+function RightSidebar({
+                          content,
+                          bookings,
+                          services,
+                          handleAcceptedNotification,
+                          handleDeclinedNotification,
+                          userEdit,
+                          handleUserEditUsernameChange,
+                          handleUserEditPasswordChange,
+                          handleUserEditPhoneNumberChange,
+                          handleUpdateUser,
+                          logout,
+                          toggleConfirmProfileDeletionDialog
+                      }: TRightSidebarProps) {
     return (
         <SwitchTransition mode="out-in">
             <CSSTransition
@@ -23,7 +36,16 @@ function RightSidebar({content, bookings, services, handleAcceptedNotification, 
                             handleAcceptedNotification={handleAcceptedNotification}
                             handleDeclinedNotification={handleDeclinedNotification}
                         />}
-                    {content === ContentType.SETTINGS_CONTENT && <SettingsContent/>}
+                    {content === ContentType.SETTINGS_CONTENT &&
+                        <UserSettingsContent
+                            userEdit={userEdit}
+                            handleUserEditUsernameChange={handleUserEditUsernameChange}
+                            handleUserEditPasswordChange={handleUserEditPasswordChange}
+                            handleUserEditPhoneNumberChange={handleUserEditPhoneNumberChange}
+                            handleUpdateUser={handleUpdateUser}
+                            logout={logout}
+                            toggleConfirmProfileDeletionDialog={toggleConfirmProfileDeletionDialog}
+                        />}
                 </div>
             </CSSTransition>
         </SwitchTransition>

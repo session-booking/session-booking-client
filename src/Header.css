@@ -39,7 +39,7 @@
     }
 }
 
-@media (max-width: 470px) {
+@media (max-width: 510px) {
     .app-name {
         display: none;
     }

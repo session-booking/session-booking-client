@@ -1,4 +1,4 @@
- import React from 'react';
+ import React, {useState} from 'react';
 import {TNotificationContentProps} from "../../types/props/TNotificationContentProps";
 import {TBooking} from "../../types/TBooking";
 import {CommonsHelper} from "../../helpers/CommonsHelper";
@@ -6,6 +6,8 @@ import {FaEnvelope, FaPhone} from 'react-icons/fa';
 import {useTransition, animated} from 'react-spring';
 
 function NotificationContent({bookings, services, handleAcceptedNotification, handleDeclinedNotification}: TNotificationContentProps) {
+    const [color, setColor] = useState<string>("#f59e0b");
+
     const validBookings = bookings.filter(booking => booking.id !== undefined);
 
     const transitions = useTransition(validBookings, {
@@ -18,6 +20,14 @@ function NotificationContent({bookings, services, handleAcceptedNotification, ha
     function getServiceName(serviceId: number | undefined) {
         const service = services.find(service => service.id === serviceId);
         return service?.name;
+    }
+
+    function handleSubmit(booking: TBooking) {
+        handleAcceptedNotification(booking, color);
+    }
+
+    function handleColorValueChange(e: React.ChangeEvent<HTMLInputElement>) {
+        setColor(e.target.value);
     }
 
     return (
@@ -35,11 +45,13 @@ function NotificationContent({bookings, services, handleAcceptedNotification, ha
                                     onClick={() => window.location.href = `mailto:${booking.clientEmail}`}>
                                     <FaEnvelope/>
                                 </button>
-                                <button
-                                    className="border border-blue-500 hover:bg-blue-100 text-blue-500 font-bold p-2 rounded-full transition duration-300"
-                                    onClick={() => window.location.href = `tel:${booking.clientPhone}`}>
-                                    <FaPhone/>
-                                </button>
+                                {(booking.clientPhone !== '') ? (
+                                    <button
+                                        className="border border-blue-500 hover:bg-blue-100 text-blue-500 font-bold p-2 rounded-full transition duration-300"
+                                        onClick={() => window.location.href = `tel:${booking.clientPhone}`}>
+                                        <FaPhone/>
+                                    </button>
+                                ) : null}
                             </div>
                         </div>
                         <p className="text-xl font-bold mt-2">{getServiceName(booking.serviceId)}</p>
@@ -48,9 +60,18 @@ function NotificationContent({bookings, services, handleAcceptedNotification, ha
                             className="font-thin">{booking.endTime}</span></p>
                         <p className="text-xl font-light">Client: <span
                             className="font-thin">{booking.clientName}</span></p>
+                        <label className="text-black font-light mt-5">
+                            Select the session color
+                            <input
+                                value={color}
+                                onChange={handleColorValueChange}
+                                type="color"
+                                className="h-4 w-4 mt-1 float-left mr-2 cursor-pointer"
+                            />
+                        </label>
                         <div className="flex justify-between items-center text-black text-lg mt-5">
                             <button
-                                onClick={() => handleAcceptedNotification(booking)}
+                                onClick={() => handleSubmit(booking)}
                                 className="border border-green-500 hover:bg-green-100 text-green-500 font-bold py-1 px-2 rounded-lg transition duration-300">
                                 Accept
                             </button>

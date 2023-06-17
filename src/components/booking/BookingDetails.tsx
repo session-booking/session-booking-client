@@ -43,11 +43,13 @@ function BookingDetails({clientDetails, selectedService, selectedAvailableSessio
                             <p className="text-xl font-normal">Email:</p>
                             <p className="text-xl font-thin flex-grow">{clientDetails.clientEmail}</p>
                         </div>
-                        <div className="flex items-center space-x-2">
-                            <IoMdCall className="text-xl mt-0.5"/>
-                            <p className="text-xl font-normal">Phone:</p>
-                            <p className="text-xl font-thin flex-grow">{clientDetails.clientPhone}</p>
-                        </div>
+                        {(clientDetails.clientPhone !== '') ? (
+                            <div className="flex items-center space-x-2">
+                                <IoMdCall className="text-xl mt-0.5"/>
+                                <p className="text-xl font-normal">Phone:</p>
+                                <p className="text-xl font-thin flex-grow">{clientDetails.clientPhone}</p>
+                            </div>
+                        ): null}
                     </div>
                 </div>
             </div>

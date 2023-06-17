@@ -21,13 +21,18 @@ import AddServiceButton from "./AddServiceButton";
 import AddService from "./AddService";
 import ServiceApi from "../../api/ServiceApi";
 import {TService} from "../../types/TService";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../redux/state/store";
 import {io} from "socket.io-client";
 import {API_URL} from "../../api/config/config";
 import BookingApi from "../../api/BookingApi";
 import {TBooking} from "../../types/TBooking";
+import {TUserEdit} from "../../types/TUserEdit";
+import UserApi from "../../api/UserApi";
 import {CommonsHelper} from "../../helpers/CommonsHelper";
+import {logoutUser, updateUser} from "../../redux/state/userSlice";
+import {useNavigate} from "react-router-dom";
+import ConfirmProfileDeletion from "./ConfirmProfileDeletion";
 
 function CalendarManagement() {
 
@@ -59,6 +64,9 @@ function CalendarManagement() {
     // Add service dialog state
     const [isAddServiceDialogOpen, setIsAddServiceDialogOpen] = useState<boolean>(false);
 
+    // Confirm profile deletion dialog state
+    const [isConfirmProfileDeletionDialogOpen, setIsConfirmProfileDeletionDialogOpen] = useState<boolean>(false);
+
     // Sidebar refs
     const leftSidebarRef = useRef<HTMLDivElement>(null);
     const rightSidebarRef = useRef<HTMLDivElement>(null);
@@ -71,8 +79,25 @@ function CalendarManagement() {
     const notificationButtonRef = useRef<HTMLButtonElement>(null);
     const settingsButtonRef = useRef<HTMLButtonElement>(null);
 
+    // Highlighted div and container reference
+    const highlightedRef = useRef<HTMLDivElement>(null);
+    const scrollableContainerRef = useRef<HTMLDivElement | null>(null);
+
     // User id from redux store
     const userId = useSelector((state: RootState) => state.user.id);
+    const username = useSelector((state: RootState) => state.user.username);
+    const userPhone = useSelector((state: RootState) => state.user.phoneNumber);
+
+    // User edit state
+    const [userEdit, setUserEdit] = useState<TUserEdit>({
+        username: (username != null) ? username : "",
+        phoneNumber: (userPhone != null) ? userPhone: "",
+        password: "",
+    });
+
+    // Redux hooks
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const toggleSidebar = () => {
         setLeftSidebarVisible(!leftSidebarVisible);
@@ -90,13 +115,53 @@ function CalendarManagement() {
         setIsAddServiceDialogOpen(!isAddServiceDialogOpen);
     }
 
+    const toggleConfirmProfileDeletionDialog = () => {
+        setIsConfirmProfileDeletionDialogOpen(!isConfirmProfileDeletionDialogOpen);
+    }
+
     const handleHeaderButtonClick = (content: ContentType) => {
         if (content == rightSidebarContent) {
             setRightSidebarVisible(false);
             setRightSidebarContent(ContentType.NO_CONTENT);
+
+            setUserEdit({
+                username: (username != null) ? username : "",
+                phoneNumber: (userPhone != null) ? userPhone: "",
+                password: "",
+            });
         } else {
             setRightSidebarVisible(true);
             setRightSidebarContent(content);
+        }
+    };
+
+    const scrollToHighlighted = () => {
+        if (highlightedRef.current && scrollableContainerRef.current) {
+            const elementPosition: number = highlightedRef.current.offsetTop;
+            const parentPosition: number = scrollableContainerRef.current.offsetTop;
+            const targetScrollPosition: number = elementPosition - parentPosition;
+
+            let startTime: number | null = null;
+            let currentPosition: number = scrollableContainerRef.current.scrollTop;
+
+            const easeInOutQuad = (t: number): number => t < 0.5 ? 2*t*t : -1 + (4 - 2*t) * t;
+
+            const animateScroll = (currentTime: number) => {
+                if (startTime === null) startTime = currentTime;
+                const elapsed: number = currentTime - startTime;
+                const duration: number = 300;
+                const progress: number = Math.min(elapsed / duration, 1);
+
+                if (scrollableContainerRef.current) {
+                    scrollableContainerRef.current.scrollTop = currentPosition + (targetScrollPosition - currentPosition) * easeInOutQuad(progress);
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(animateScroll);
+                }
+            };
+
+            requestAnimationFrame(animateScroll);
         }
     };
 
@@ -167,6 +232,10 @@ function CalendarManagement() {
             document.removeEventListener("click", handleClickOutsideForRightSidebar, true);
         };
     }, [selectedWeek]);
+
+    function setCurrentWeek() {
+        setSelectedWeek(getDaysOfCurrentWeek());
+    }
 
     async function handleCreateSession(session: TSession) {
         try {
@@ -262,7 +331,7 @@ function CalendarManagement() {
         }
     }
 
-    async function handleAcceptedNotification(booking: TBooking) {
+    async function handleAcceptedNotification(booking: TBooking, color: string) {
         try {
             await BookingApi.deleteBooking(booking);
             setBookings(bookings.filter((b) => b.id !== booking.id));
@@ -273,7 +342,8 @@ function CalendarManagement() {
                 endTime: booking.endTime,
                 clientName: booking.clientName,
                 clientEmail: booking.clientEmail,
-                color: CommonsHelper.generateRandomColor(),
+                clientPhone: booking.clientPhone,
+                color: color,
             });
             setSessions([...sessions, newSession]);
         } catch (error: any) {
@@ -290,6 +360,77 @@ function CalendarManagement() {
         }
     }
 
+    function handleUserEditUsernameChange(value: string) {
+        setUserEdit({
+            ...userEdit,
+            username: value,
+        })
+    }
+
+    function handleUserEditPasswordChange(value: string) {
+        setUserEdit({
+            ...userEdit,
+            password: value,
+        })
+    }
+
+    function handleUserEditPhoneNumberChange(value: string) {
+        setUserEdit({
+            ...userEdit,
+            phoneNumber: value,
+        })
+    }
+
+    async function handleUpdateUser(): Promise<boolean> {
+        try {
+            let hashedPassword = "";
+            if (userEdit.password !== "") {
+                hashedPassword = await CommonsHelper.hashPassword(userEdit.password);
+            }
+
+            const updatedUser = await UserApi.updateUser({
+                ...userEdit,
+                password: hashedPassword,
+            });
+
+            if (updatedUser) {
+                setUserEdit({
+                    ...userEdit,
+                    password: "",
+                });
+
+                dispatch(updateUser({
+                    username: updatedUser.username,
+                    phoneNumber: updatedUser.phoneNumber,
+                }))
+
+                return true;
+            }
+        } catch (error: any) {
+            LogApi.logError(error.toString(), userEdit);
+            return false;
+        }
+
+        return false;
+    }
+
+    function logout() {
+        dispatch(logoutUser());
+        localStorage.removeItem('token');
+        navigate("/login");
+    }
+
+    async function deleteProfile() {
+        await UserApi.deleteUser();
+        dispatch(logoutUser());
+        localStorage.removeItem('token');
+        navigate("/login");
+    }
+
+    function getTDayDateList(selectedWeek: TDay[]): Date[] {
+        return selectedWeek.map((day) => day.date);
+    }
+
     return (
         <>
             <Header
@@ -299,8 +440,18 @@ function CalendarManagement() {
                 settingsButtonRef={settingsButtonRef}
                 rightSidebarContent={rightSidebarContent}
                 onHeaderButtonClick={handleHeaderButtonClick}
+                setCurrentWeek={setCurrentWeek}
             />
             <div className="flex">
+                <Dialog
+                    isDialogOpen={isConfirmProfileDeletionDialogOpen}
+                    toggleDialog={toggleConfirmProfileDeletionDialog}
+                >
+                    <ConfirmProfileDeletion
+                        handleDeleteProfile={deleteProfile}
+                        handleToggleDialog={toggleConfirmProfileDeletionDialog}
+                    />
+                </Dialog>
                 <Dialog
                     isDialogOpen={isCreateSessionDialogOpen}
                     toggleDialog={toggleCreateSessionDialog}
@@ -324,7 +475,10 @@ function CalendarManagement() {
                 <div ref={leftSidebarRef} className={`left-sidebar-container ${leftSidebarVisible ? "visible" : ""}`}>
                     <div className="content-display">
                         <CreateSessionButton handleToggleDialog={toggleCreateSessionDialog}/>
-                        <WeeklyCalendar handleSelectedWeek={handleSelectedWeek}/>
+                        <WeeklyCalendar
+                            selectedWeek={getTDayDateList(selectedWeek)}
+                            handleSelectedWeek={handleSelectedWeek}
+                        />
                         <AddServiceButton handleToggleDialog={toggleAddServiceDialog}/>
                     </div>
                 </div>
@@ -336,6 +490,13 @@ function CalendarManagement() {
                         bookings={bookings}
                         handleAcceptedNotification={handleAcceptedNotification}
                         handleDeclinedNotification={handleDeclinedNotification}
+                        userEdit={userEdit}
+                        handleUserEditUsernameChange={handleUserEditUsernameChange}
+                        handleUserEditPasswordChange={handleUserEditPasswordChange}
+                        handleUserEditPhoneNumberChange={handleUserEditPhoneNumberChange}
+                        handleUpdateUser={handleUpdateUser}
+                        logout={logout}
+                        toggleConfirmProfileDeletionDialog={toggleConfirmProfileDeletionDialog}
                     />
                 </div>
                 <div ref={hamburgerRef} className="hamburger-visibility">
@@ -346,6 +507,9 @@ function CalendarManagement() {
                     />
                 </div>
                 <Calendar
+                    highlightedRef={highlightedRef}
+                    scrollableContainerRef={scrollableContainerRef}
+                    scrollToHighlighted={scrollToHighlighted}
                     selectedWeek={selectedWeek}
                     sessions={sessions}
                     timeSlots={timeSlots}

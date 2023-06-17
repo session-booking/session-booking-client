@@ -114,6 +114,7 @@ class SessionApi {
             startTime: object.startTime,
             endTime: object.endTime,
             clientEmail: object.clientEmail,
+            clientPhone: object.clientPhone,
             clientName: object.clientName,
             color: object.color
         });

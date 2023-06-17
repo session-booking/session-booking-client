@@ -4,14 +4,24 @@ import {AiOutlineQrcode} from "react-icons/ai";
 import {THeaderProps} from "../../types/props/THeaderProps";
 import {ContentType} from "../../enums/ContentType";
 
-function Header({notificationCount, qrButtonRef, notificationButtonRef, settingsButtonRef, rightSidebarContent, onHeaderButtonClick}: THeaderProps) {
+function Header({
+                    notificationCount,
+                    qrButtonRef,
+                    notificationButtonRef,
+                    settingsButtonRef,
+                    rightSidebarContent,
+                    onHeaderButtonClick,
+                    setCurrentWeek
+                }: THeaderProps) {
     return (
         <header className="px-4 py-1 flex items-center justify-between border-b border-gray-300">
             <div className="flex items-center">
                 <div className="app-name m-0 font-light">Session Booking</div>
-                <button className="today-button font-light text-blue-500 border border-blue-500 px-2 ml-4 rounded-md
+                <button
+                    onClick={setCurrentWeek}
+                    className="today-button font-light text-blue-500 border border-blue-500 px-2 ml-4 rounded-md
                         hover:bg-blue-100 transition duration-300 text-[18px]">
-                    Today
+                    Go to now
                 </button>
             </div>
             <div className="flex items-center">
@@ -29,7 +39,8 @@ function Header({notificationCount, qrButtonRef, notificationButtonRef, settings
                     border-none cursor-pointer p-2 ml-2 hover:bg-gray-300 rounded-full transition duration-300`}>
                     <IoNotificationsOutline size={30}/>
                     {notificationCount > 0 &&
-                        <div className="absolute top-0 right-0 h-6 w-6 bg-red-500 rounded-full flex items-center justify-center text-white">
+                        <div
+                            className="absolute top-0 right-0 h-6 w-6 bg-red-500 rounded-full flex items-center justify-center text-white">
                             {notificationCount}
                         </div>
                     }

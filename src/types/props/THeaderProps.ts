@@ -8,4 +8,5 @@ export type THeaderProps = {
     settingsButtonRef: React.RefObject<HTMLButtonElement>;
     rightSidebarContent: ContentType;
     onHeaderButtonClick: (content: ContentType) => void;
+    setCurrentWeek: () => void;
 }

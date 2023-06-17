@@ -47,8 +47,8 @@ function ClientDetails({clientDetails, handleClientNameChange, handleClientSurna
                         type="tel"
                         className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base
                             font-normal text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                        pattern="[0-9]{3} [0-9]{3} [0-9]{3}"
-                        placeholder="041 111 222"
+                        pattern="[0-9]{9}"
+                        placeholder="Optional (9 digits)"
                     />
                 </label>
             </div>

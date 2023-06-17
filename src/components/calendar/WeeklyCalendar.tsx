@@ -3,7 +3,7 @@ import {FiChevronLeft, FiChevronRight} from "react-icons/fi";
 import {TWeeklyCalendarProps} from "../../types/props/TWeeklyCalendarProps";
 import {CalendarHelper} from "../../helpers/CalendarHelper";
 
-function WeeklyCalendar({handleSelectedWeek}: TWeeklyCalendarProps) {
+function WeeklyCalendar({selectedWeek, handleSelectedWeek}: TWeeklyCalendarProps) {
 
     // Current year and month
     const [year, setYear] = useState(CalendarHelper.getCurrentYear());
@@ -12,13 +12,6 @@ function WeeklyCalendar({handleSelectedWeek}: TWeeklyCalendarProps) {
     // Weeks in the current month
     const weeks = CalendarHelper.getAllDaysInCurrentMonth(year, month);
 
-    const isCurrentWeek = (week: Date[]) => {
-        return week.some(CalendarHelper.isToday);
-    };
-
-    // Selected week
-    const [selectedWeek, setSelectedWeek] = useState(getDefaultWeek());
-
     const isSelectedWeek = (week: Date[]) => {
         if (selectedWeek !== undefined) {
             return week[0].getTime() === selectedWeek[0].getTime();
@@ -26,17 +19,8 @@ function WeeklyCalendar({handleSelectedWeek}: TWeeklyCalendarProps) {
         return false;
     }
 
-    function getDefaultWeek() {
-        for (let i = 0; i < weeks.length; i++) {
-            if (isCurrentWeek(weeks[i])) {
-                return weeks[i];
-            }
-        }
-    }
-
     function handleWeekSelection(week: Date[]) {
         handleSelectedWeek(week);
-        setSelectedWeek(week);
     }
 
     function setMonthAndYear(month: number) {

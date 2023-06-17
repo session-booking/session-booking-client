@@ -8,6 +8,7 @@ import {useDispatch} from "react-redux";
 import {loginUser} from "../../redux/state/userSlice";
 import {useNavigate} from 'react-router-dom';
 import {ClipLoader} from 'react-spinners';
+import {CommonsHelper} from "../../helpers/CommonsHelper";
 
 function Login() {
     const [user, setUser] = useState<TUser>({
@@ -44,21 +45,6 @@ function Login() {
         setFormType(formType === 'login' ? 'register' : 'login');
     };
 
-    const validateUsername = (username: string) => {
-        return username.length >= 5;
-    };
-
-    const validatePhoneNumber = (phoneNumber: string) => {
-        const hasNineDigits = /^\d{9}$/;
-        return hasNineDigits.test(phoneNumber);
-    };
-
-    const validatePassword = (password: string) => {
-        const hasNumber = /\d/;
-        const hasSymbol = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
-        return password.length >= 8 && hasNumber.test(password) && hasSymbol.test(password);
-    };
-
     const showPopup = (message: string, success: boolean) => {
         if (success) {
             switchFormType();
@@ -78,7 +64,7 @@ function Login() {
         setIsLoading(true);
 
         try {
-            const hashedPassword = await hashPassword(user.password);
+            const hashedPassword = await CommonsHelper.hashPassword(user.password);
 
             const response = await UserApi.login({
                 id: null,
@@ -101,7 +87,6 @@ function Login() {
                 );
 
                 navigate("/");
-
             } else if (response.httpCode === 404 || response.httpCode === 401) {
                 showPopup("Invalid email or password.", false);
                 setIsLoading(false);
@@ -119,17 +104,17 @@ function Login() {
         setIsLoading(true);
 
         if (user.username && user.email && user.password) {
-            let formValid = validateUsername(user.username);
+            let formValid = CommonsHelper.validateUsername(user.username);
 
             if (user.phoneNumber && user.phoneNumber !== "") {
-                formValid = formValid && validatePhoneNumber(user.phoneNumber);
+                formValid = formValid && CommonsHelper.validatePhoneNumber(user.phoneNumber);
             }
 
-            formValid = formValid && validatePassword(user.password);
+            formValid = formValid && CommonsHelper.validatePassword(user.password);
 
             if (formValid) {
                 try {
-                    const hashedPassword = await hashPassword(user.password);
+                    const hashedPassword = await CommonsHelper.hashPassword(user.password);
 
                     const response = await UserApi.register({
                         id: null,
@@ -178,7 +163,7 @@ function Login() {
         });
         setValidationMessages({
             ...validationMessages,
-            username: validateUsername(value) ? '' : 'Username must be at least 5 characters long.',
+            username: CommonsHelper.validateUsername(value) ? '' : 'Username must be at least 5 characters long.',
         });
     }
 
@@ -197,7 +182,7 @@ function Login() {
         });
         setValidationMessages({
             ...validationMessages,
-            phoneNumber: validatePhoneNumber(value) ? '' : 'Phone number must have exactly 9 digits.',
+            phoneNumber: CommonsHelper.validatePhoneNumber(value) ? '' : 'Phone number must have exactly 9 digits.',
         });
     }
 
@@ -209,26 +194,10 @@ function Login() {
         });
         setValidationMessages({
             ...validationMessages,
-            password: validatePassword(value)
+            password: CommonsHelper.validatePassword(value)
                 ? ''
                 : 'Password must contain at least 8 characters, one number, and one symbol.',
         });
-    }
-
-    async function hashPassword(password: string | null): Promise<string> {
-        if (!password) {
-            throw new Error("Password is undefined");
-        }
-
-        const encoder = new TextEncoder();
-        const passwordData = encoder.encode(password);
-
-        const hashedBuffer = await crypto.subtle.digest("SHA-256", passwordData);
-        const hashedArray = new Uint8Array(hashedBuffer);
-
-        return Array.from(hashedArray)
-            .map(b => b.toString(16).padStart(2, "0"))
-            .join("");
     }
 
     return (
@@ -283,9 +252,10 @@ function Login() {
                                     {showPassword ? <FiEyeOff/> : <FiEye/>}
                                 </button>
                             </div>
-                            <div className="flex items-center justify-between mb-5">
+                            <div className="flex justify-center mb-5">
                                 <button
-                                    className="text-[18px] bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                    className="text-[18px] bg-blue-500 hover:bg-blue-700 text-white font-medium py-2
+                                        px-4 rounded focus:outline-none focus:shadow-outline transition duration-300"
                                     disabled={isLoading}
                                 >
                                     {isLoading ? (
@@ -294,11 +264,6 @@ function Login() {
                                         "Sign In"
                                     )}
                                 </button>
-                                <a className="inline-block align-baseline font-medium text-sm text-blue-500
-                                hover:text-blue-800 text-[16px]"
-                                   href="#">
-                                    Forgot Password?
-                                </a>
                             </div>
                         </form>
                         <p className="text-center text-gray-700 text-[16px]">
@@ -381,7 +346,7 @@ function Login() {
                             <div className="flex items-center justify-center mb-5">
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded
-                                    focus:outline-none focus:shadow-outline text-[18px]"
+                                    focus:outline-none focus:shadow-outline text-[18px] transition duration-300"
                                 >
                                     {isLoading ? (
                                         <ClipLoader color="#ffffff" size={22} className="mt-1"/>
@@ -395,7 +360,7 @@ function Login() {
                             Already have an account?{' '}
                             <a className="font-medium text-blue-500 hover:text-blue-800" href="#"
                                onClick={switchFormType}>
-                                Login
+                                Sign In
                             </a>
                         </p>
                     </>

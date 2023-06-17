@@ -6,6 +6,8 @@ import {AiOutlineMinusCircle} from 'react-icons/ai';
 import {TTimeSlot} from "../../types/TTimeSlot";
 
 function SetTimeSlots({selectedDay, timeSlots, handleCreateTimeSlot, handleDeleteTimeSlot}: TSetTimeSlotsProps) {
+    const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+
     const [timeSlot, setTimeSlot] = useState<TTimeSlot>({
         date: (selectedDay?.date != undefined)
             ? new Date(Date.UTC(selectedDay?.date.getFullYear(), selectedDay?.date.getMonth(), selectedDay?.date.getDate()))
@@ -15,6 +17,11 @@ function SetTimeSlots({selectedDay, timeSlots, handleCreateTimeSlot, handleDelet
     });
 
     const handleAddTimeSlot = () => {
+        if (!validateTimeSlot()) {
+            setErrorMessage("Session end time must be after session start time.");
+            return;
+        }
+
         handleCreateTimeSlot(timeSlot);
 
         setTimeSlot({
@@ -22,7 +29,13 @@ function SetTimeSlots({selectedDay, timeSlots, handleCreateTimeSlot, handleDelet
             startTime: "00:00",
             endTime: "00:00",
         })
+
+        setErrorMessage(undefined);
     };
+
+    function validateTimeSlot() {
+        return timeSlot.startTime < timeSlot.endTime;
+    }
 
     const handleRemoveTimeSlot = (timeSlot: TTimeSlot) => {
         handleDeleteTimeSlot(timeSlot);
@@ -80,6 +93,11 @@ function SetTimeSlots({selectedDay, timeSlots, handleCreateTimeSlot, handleDelet
                     <h3 className="text-md font-thin">{formatDayName(selectedDay?.name)}{formatDate(selectedDay?.date)}</h3>
                     <h2 className="text-2xl font-light mb-4">Set time slots for client booking</h2>
                     <div className="flex flex-col justify-between items-center">
+                        {errorMessage && (
+                            <div className="w-full">
+                                <div className="text-red-500 flex justify-center mb-5">{errorMessage}</div>
+                            </div>
+                        )}
                         <div className="flex flex-row justify-between items-center w-full">
                             <label className="mr-2 w-full font-light">
                                 Start Time

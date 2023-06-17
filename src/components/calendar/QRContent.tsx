@@ -6,6 +6,8 @@ import {useSelector} from "react-redux";
 import {RootState} from "../../redux/state/store";
 import LogApi from "../../api/LogApi";
 import {encode as base64_encode} from 'base-64';
+import QRCode from "qrcode.react";
+import {MdFileDownload} from "react-icons/all";
 
 function QRContent() {
     const [copied, setCopied] = useState(false);
@@ -54,6 +56,19 @@ function QRContent() {
         setTimeout(() => setCopied(false), 1000);
     };
 
+    const handleDownloadQRCode = () => {
+        const canvas = document.getElementById("qr-code") as HTMLCanvasElement;
+        const pngUrl = canvas
+            .toDataURL("image/png")
+            .replace("image/png", "image/octet-stream");
+        let downloadLink = document.createElement("a");
+        downloadLink.href = pngUrl;
+        downloadLink.download = "session-booking-qr.png";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    };
+
     function toHex(bytes: Uint8Array): string {
         return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
     }
@@ -68,7 +83,24 @@ function QRContent() {
     }
 
     return (
-        <div className="flex justify-center">
+        <div className="flex flex-col justify-center items-center m-4">
+            <div className="rounded-md h-fit w-fit p-5 border-2 border-gray-400">
+                <QRCode
+                    id="qr-code"
+                    value={getSessionBookingURL()}
+                    size={222}
+                    level={"H"}
+                    includeMargin={true}
+                />
+                <button
+                    onClick={handleDownloadQRCode}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-2 px-4 rounded inline-flex
+                        items-center transition duration-300 ease-in-out transform w-full justify-center"
+                >
+                    <MdFileDownload size={20} className="mr-2"/>
+                    Download QR Code
+                </button>
+            </div>
             <CopyToClipboard text={getSessionBookingURL()} onCopy={handleCopy}>
                 <Button copied={copied}>
                     <FaCopy size={16}/>
