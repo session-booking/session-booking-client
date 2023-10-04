@@ -1,2 +1,2 @@
-# session-booking-client
+# Session Schedule client module
 The Client Module of Session Schedule enables interaction between clients and the service providers' schedules. Clients can book sessions using the URL or QR code shared by service providers. The calendar UI displays booked and available sessions, facilitating seamless bookings. Service providers can accept or cancel booking requests. Access the app at https://www.sessionschedule.com/.
